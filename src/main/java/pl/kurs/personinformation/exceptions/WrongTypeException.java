@@ -1,0 +1,9 @@
+package pl.kurs.personinformation.exceptions;
+
+public class WrongTypeException extends RuntimeException {
+
+    public WrongTypeException(String message) {
+        super(message);
+    }
+
+}

@@ -1,0 +1,31 @@
+type,first_name,last_name,pesel,height,weight,email,param1,param2,param3,param4
+Student,John,Smith,02101078901,180,75,johnsmith@example.com,Harvard University,3,Computer Science,1000
+Student,Emily,Johnson,03052789012,160,55,emilyjohnson@example.com,Stanford University,2,Psychology,900
+Student,Michael,Williams,02070701234,175,70,michaelwilliams@example.com,University of Oxford,2,Political Science,800
+Student,Sophia,Brown,01062890123,170,65,sophiabrown@example.com,Princeton University,1,Economics,950
+Student,Liam,Miller,00110912345,182,78,liammiller@example.com,Yale University,1,English Literature,950
+Student,Olivia,Davis,98091234567,165,60,oliviadavis@example.com,California Institute of Technology,4,Mechanical Engineering,1100
+Student,Noah,Garcia,03090123456,178,72,noahgarcia@example.com,Massachusetts Institute of Technology,4,Business Administration,1100
+Student,Isabella,Rodriguez,99121456789,162,58,isabellarodriguez@example.com,University of Cambridge,5,Computer Science,1000
+Student,Mason,Martinez,02012345678,175,70,masonmartinez@example.com,Harvard University,2,Psychology,900
+Student,Ethan,Anderson,99122567890,168,63,ethananderson@example.com,Stanford University,2,Political Science,800
+Employee,William,Jones,88052567891,175,75,williamjones@example.com,2021-01-15,Intern,35000
+Employee,Olivia,Davis,92041978901,162,55,oliviadavis@example.com,2022-03-20,Junior Associate,60000
+Employee,Liam,Johnson,82051789012,178,70,liamjohnson@example.com,2022-06-10,Analyst,75000
+Employee,Mia,Smith,78062890123,167,63,miasmith@example.com,2020-12-01,Manager,95000
+Employee,James,Miller,65070901234,180,78,jamesmiller@example.com,2021-07-05,Senior Manager,120000
+Employee,Charlotte,Martinez,66180912345,160,55,charlottemartinez@example.com,2019-10-22,Director,140000
+Employee,Emma,Williams,82113013466,172,68,emmawilliams@example.com,2018-11-30,Vice President,160000
+Employee,Oliver,Johnson,89012345678,175,75,oliverjohnson@example.com,2020-03-15,Manager,95000
+Employee,Amelia,Jones,78022823489,168,63,ameliajones@example.com,2021-02-28,Analyst,75000
+Employee,Sophia,Brown,89051856700,170,70,sophiabrown@example.com,2019-05-18,Intern,35000
+Retiree,Elijah,Smith,35053032101,168,70,elijahsmith@example.com,2000,30,2000
+Retiree,Grace,Johnson,36052526802,163,65,gracejohnson@example.com,1800,25,1800
+Retiree,Logan,Brown,33053542233,175,72,loganbrown@example.com,2200,35,2200
+Retiree,Stella,Williams,34053012604,162,60,stellawilliams@example.com,1900,30,1900
+Retiree,Lucas,Jones,37053022355,180,78,lucasjones@example.com,2100,35,2100
+Retiree,Chloe,Davis,36053033006,167,65,chloedavis@example.com,2000,30,2000
+Retiree,Aiden,Martinez,39053042377,172,70,aidenmartinez@example.com,2300,35,2300
+Retiree,Scarlett,Anderson,38053052508,165,62,scarlettanderson@example.com,2000,30,2000
+Retiree,Jack,Miller,40053062599,175,75,jackmiller@example.com,2400,35,2400
+Retiree,Mia,Smith,37053072600,160,60,miasmith@example.com,2100,35,2100

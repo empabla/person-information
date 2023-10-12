@@ -1,0 +1,27 @@
+name,dictionary_id
+Employee,1
+Student,1
+Retiree,1
+Intern,2
+Junior Associate,2
+Analyst,2
+Manager,2
+Senior Manager,2
+Director,2
+Vice President,2
+Harvard University,3
+California Institute of Technology,3
+Stanford University,3
+University of Oxford,3
+University of Cambridge,3
+Massachusetts Institute of Technology,3
+Yale University,3
+Princeton University,3
+Computer Science,4
+Psychology,4
+Business Administration,4
+Mechanical Engineering,4
+Economics,4
+Biology,4
+English Literature,4
+Political Science,4
