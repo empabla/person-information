@@ -1,8 +1,8 @@
-package pl.kurs.personinformation.factory.creators;
+package pl.kurs.personinformation.factory.creatorsfromcsv;
 
 import pl.kurs.personinformation.models.Person;
 
-public interface PersonCreator {
+public interface PersonFromCsvCreator {
 
     String getType();
 

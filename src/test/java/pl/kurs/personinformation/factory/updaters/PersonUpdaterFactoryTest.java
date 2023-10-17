@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.commands.UpdateEmployeeCommand;
+import pl.kurs.personinformation.commands.UpdatePersonCommand;
 import pl.kurs.personinformation.models.DictionaryValue;
 import pl.kurs.personinformation.models.Employee;
 import pl.kurs.personinformation.repositories.PersonRepository;
@@ -44,9 +45,9 @@ class PersonUpdaterFactoryTest {
     }
 
     @Test
-    public void testCreateEmployeeUpdater() {
+    public void shouldUpdateEmployeeDataUsingPersonUpdaterFactory() {
         //given
-        UpdateEmployeeCommand updateCommand = new UpdateEmployeeCommand(
+        UpdatePersonCommand updateCommand = new UpdateEmployeeCommand(
                 1L, "Employee", "John", "Doe", "12345678911", 180, 70,
                 "johndoe@test.com", 0L, LocalDate.of(2021, 1, 1),
                 "Director", 100000.00

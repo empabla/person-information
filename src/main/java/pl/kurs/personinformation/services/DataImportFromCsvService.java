@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.kurs.personinformation.commands.CreatePersonFromCsvCommand;
 import pl.kurs.personinformation.exceptions.DataImportFromFileException;
 import pl.kurs.personinformation.exceptions.InvalidFileException;
-import pl.kurs.personinformation.factory.creators.PersonFactory;
+import pl.kurs.personinformation.factory.creatorsfromcsv.PersonFromCsvFactory;
 import pl.kurs.personinformation.models.Dictionary;
 import pl.kurs.personinformation.models.DictionaryValue;
 import pl.kurs.personinformation.models.ImportStatus;
@@ -30,7 +30,7 @@ public class DataImportFromCsvService {
 
     private final PersonRepository personRepository;
 
-    private final PersonFactory personFactory;
+    private final PersonFromCsvFactory personFromCsvFactory;
 
     private final DictionaryService dictionaryService;
 
@@ -60,7 +60,7 @@ public class DataImportFromCsvService {
                             try {
                                 String personType = parameters[0].trim();
                                 CreatePersonFromCsvCommand command = new CreatePersonFromCsvCommand(personType, parameters);
-                                Person person = personFactory.create(command);
+                                Person person = personFromCsvFactory.create(command);
                                 personRepository.save(person);
                                 importStatus.setProcessedRows(importedCount.incrementAndGet());
                             } catch (DataIntegrityViolationException e) {

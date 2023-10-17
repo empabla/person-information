@@ -1,4 +1,4 @@
-package pl.kurs.personinformation.factory.creators;
+package pl.kurs.personinformation.factory.creatorsfromcsv;
 
 import lombok.Getter;
 import org.springframework.stereotype.Service;
@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Getter
-public class PersonFactory {
+public class PersonFromCsvFactory {
 
-    private final Map<String, PersonCreator> creators;
+    private final Map<String, PersonFromCsvCreator> creators;
 
-    public PersonFactory(Set<PersonCreator> creators) {
+    public PersonFromCsvFactory(Set<PersonFromCsvCreator> creators) {
         this.creators = creators.stream()
-                .collect(Collectors.toMap(PersonCreator::getType, Function.identity()));
+                .collect(Collectors.toMap(PersonFromCsvCreator::getType, Function.identity()));
     }
 
     public Person create(CreatePersonFromCsvCommand command) {
