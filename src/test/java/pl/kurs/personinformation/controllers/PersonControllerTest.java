@@ -409,7 +409,7 @@ class PersonControllerTest {
     }
 
     @Test
-    public void shouldReturnConflictStatusWhenUpdateOutOfDateVersion() throws Exception {
+    public void shouldReturnConflictStatusForOptimisticLockingExceptionWhenUpdateOutOfDateVersion() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
                 new Dictionary("types")
@@ -626,7 +626,7 @@ class PersonControllerTest {
     }
 
     @Test
-    public void shouldReturnImportStatusNonStartedBeforeImportAndCompletedWhenImportingAFile() throws Exception {
+    public void shouldReturnImportStatusNotStartedBeforeImportAndCompletedWhenImportingAFile() throws Exception {
         //given
         String fileContent = "type,first_name,last_name,pesel,height,weight,email,param1,param2,param3,param4" +
                 "\nEmployee,John,Doe,12345678911,180,70,johndoe@test.com,2021-01-01,Manager,40000";
@@ -660,6 +660,39 @@ class PersonControllerTest {
         personRepository.deleteAllInBatch();
         dictionaryValueRepository.deleteAllInBatch();
         dictionaryRepository.deleteAllInBatch();
+    }
+
+    @Test
+    public void shouldPaginate10ResultsIntoTwoPagesWith5Results() throws Exception {
+        //given
+        Dictionary types = dictionaryRepository.saveAndFlush(
+                new Dictionary("types")
+        );
+        Dictionary positions = dictionaryRepository.saveAndFlush(
+                new Dictionary("positions")
+        );
+        DictionaryValue employeeDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("employee", types)
+        );
+        DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("manager", positions)
+        );
+        for (int i = 0; i < 10; i++) {
+            Employee employee = new Employee(employeeDV, "Test" + i, "TestTest" + i,
+                    "1234567891" + i, 170, 70, "test" + i + "@test.com",
+                    LocalDate.of(2021, 1, 1), managerDV, 40000.00);
+            personRepository.saveAndFlush(employee);
+        }
+        //when
+        int pageNumber = 1;
+        int pageSize = 5;
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/people?page=" + pageNumber + "&size=" + pageSize));
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(pageSize)))
+                .andExpect(jsonPath("$[0].firstName", is("Test5")));
     }
 
 }
