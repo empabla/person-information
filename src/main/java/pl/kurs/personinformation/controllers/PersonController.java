@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import pl.kurs.personinformation.commands.UpdatePersonCommand;
 import pl.kurs.personinformation.dto.ImportStatusDto;
 import pl.kurs.personinformation.dto.PersonDto;
 import pl.kurs.personinformation.dto.StatusDto;
+import pl.kurs.personinformation.exceptions.DataImportFromFileException;
 import pl.kurs.personinformation.factory.converters.PersonDtoConverterFactory;
 import pl.kurs.personinformation.models.ImportStatus;
 import pl.kurs.personinformation.models.Person;
@@ -24,6 +26,7 @@ import pl.kurs.personinformation.services.PersonService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,14 +42,15 @@ public class PersonController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    @ApiOperation(value = "Get a list of people based on parameters given in the URL after the '?'." +
-            "Join conditions with the '&'." +
-            "- for literal parameters, enter: parameter=value," +
-            "- for numerical parameters, specify the range: parameter=fromX,toY, where X and Y are the limits of " +
-            "the closed range;" +
-            "- for gender, specify sex=m for a man and sex=w for a woman.",
-            response = PersonDto.class, responseContainer = "List",
-            notes = "Provide pageable if required")
+    @ApiOperation(value = "Get a list of people based on parameters",
+            notes = "This endpoint allows you to get results based on parameters given in the URL after the '?'." +
+                    "Join conditions with the '&'." +
+                    "- for literal parameters, enter: parameter=value," +
+                    "- for numerical parameters, specify the range: parameter=fromX,toY, where X and Y " +
+                    "are the limits of the closed range;" +
+                    "- for gender, specify sex=m for a man and sex=w for a woman." +
+                    "Provide pageable if required",
+            response = PersonDto.class, responseContainer = "List")
     public ResponseEntity<List<PersonDto>> getPeople(@RequestParam Map<String, String> parameters,
                                                      @PageableDefault Pageable pageable) {
         Page<Person> people = personService.getPeople(parameters, pageable);
@@ -65,11 +69,13 @@ public class PersonController {
     }
 
     @PostMapping("/import")
-    @ApiOperation(value = "Import data from a CSV file", response = StatusDto.class)
-    public ResponseEntity<StatusDto> importPeople(@RequestParam("file") MultipartFile file) {
-        dataImportFromCsvService.importPeopleFromCsvFile(file);
-        return ResponseEntity.ok(new StatusDto("Data import has started. Check status endpoint " +
-                "/api/people/import/status for progress."));
+    @ApiOperation(value = "Import data from a CSV file asynchronously",
+            notes = "This endpoint allows you to import data from a CSV file in an asynchronous manner. " +
+                    "It processes the CSV file and saves the data to the database.", response = StatusDto.class)
+    public CompletableFuture<ResponseEntity<StatusDto>> importPeople(@RequestParam("file") MultipartFile file) {
+        return dataImportFromCsvService.importPeopleFromCsvFile(file)
+                .thenApply(result -> ResponseEntity.ok(new StatusDto("Data import has started. Check status endpoint " +
+                        "/api/people/import/status for progress.")));
     }
 
     @GetMapping("/import/status")

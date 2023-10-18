@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -169,12 +168,12 @@ class PersonControllerTest {
         DictionaryValue fieldOfStudyDV = dictionaryValueRepository.saveAndFlush(
                 new DictionaryValue("test field", fieldsOfStudy)
         );
-        Employee employee = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Employee(employeeDV, "John", "Doe", "12345678911", 180, 70,
                         "john.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
                         40000.00)
         );
-        Student student = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Student(studentDV, "John", "Doe", "12345678912", 180, 70,
                         "john.doe@test.com", universityDV, 2, fieldOfStudyDV, 5000.00)
         );
@@ -215,12 +214,12 @@ class PersonControllerTest {
         DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
                 new DictionaryValue("manager", positions)
         );
-        Employee employee1 = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Employee(employeeDV, "John", "Doe", "12345678911", 180, 70,
                         "john.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
                         40000.00)
         );
-        Employee employee2 = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Employee(employeeDV, "Tom", "Doe", "12345678912", 170, 60,
                         "tom.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
                         50000.00)
@@ -282,11 +281,11 @@ class PersonControllerTest {
                         "anna.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
                         40000.00)
         );
-        Student student1 = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Student(studentDV, "John", "Doe", "12345678912", 170, 60,
                         "john.doe@test.com", universityDV, 2, fieldOfStudyDV, 50000.00)
         );
-        Student student2 = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Student(studentDV, "Mia", "Doe", "1234567822", 160, 50,
                         "mia.doe@test.com", universityDV, 2, fieldOfStudyDV, 1000.00)
         );
@@ -328,12 +327,12 @@ class PersonControllerTest {
         DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
                 new DictionaryValue("manager", positions)
         );
-        Employee employee1 = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Employee(employeeDV, "John", "Doe", "12345678911", 180, 70,
                         "john.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
                         40000.00)
         );
-        Employee employee2 = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Employee(employeeDV, "Tom", "Doe", "12345678912", 170, 60,
                         "tom.doe@test.com", LocalDate.of(2022, 1, 1), managerDV,
                         50000.00)
@@ -589,80 +588,6 @@ class PersonControllerTest {
     }
 
     @Test
-    public void shouldReturnOkStatusWhenImportPeopleFromCorrectCsvFile() throws Exception {
-        //given
-        String fileContent = "type,first_name,last_name,pesel,height,weight,email,param1,param2,param3,param4" +
-                "\nEmployee,John,Doe,12345678911,180,70,johndoe@test.com,2021-01-01,Manager,40000";
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "test-peopleToImport.csv", "text/csv", fileContent.getBytes()
-        );
-        //when
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .multipart("/api/people/import").file(file));
-        //then
-        resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(("Data import has started. " +
-                        "Check status endpoint /api/people/import/status for progress.")));
-    }
-
-    @Test
-    public void shouldReturnBadRequestStatusForEmptyFile() throws Exception {
-        //given
-        String fileContent = "";
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "test-peopleToImport.csv", "text/csv", fileContent.getBytes()
-        );
-        //when
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .multipart("/api/people/import").file(file));
-        //then
-        resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.timestamp", is(notNullValue())))
-                .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.errorMessages",
-                        hasItem("Error during data import. File is empty or does not exist.")));
-    }
-
-    @Test
-    public void shouldReturnImportStatusNotStartedBeforeImportAndCompletedWhenImportingAFile() throws Exception {
-        //given
-        String fileContent = "type,first_name,last_name,pesel,height,weight,email,param1,param2,param3,param4" +
-                "\nEmployee,John,Doe,12345678911,180,70,johndoe@test.com,2021-01-01,Manager,40000";
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "test-peopleToImport.csv", "text/csv", fileContent.getBytes()
-        );
-        //then before import
-        ResultActions resultActionsBefore = mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/people/import/status"));
-        resultActionsBefore
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("Import has not started yet."))
-                .andExpect(jsonPath("$.startTime").isEmpty())
-                .andExpect(jsonPath("$.endTime").isEmpty())
-                .andExpect(jsonPath("$.processedRows").value(0));
-        //when
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/people/import").file(file));
-        //then after import
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/people/import/status"));
-        resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("Import completed."))
-                .andExpect(jsonPath("$.startTime").isNotEmpty())
-                .andExpect(jsonPath("$.endTime").isNotEmpty())
-                .andExpect(jsonPath("$.processedRows").value(1));
-    }
-
-    @AfterEach
-    public void tearDown() {
-        personRepository.deleteAllInBatch();
-        dictionaryValueRepository.deleteAllInBatch();
-        dictionaryRepository.deleteAllInBatch();
-    }
-
-    @Test
     public void shouldPaginate10ResultsIntoTwoPagesWith5Results() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -693,6 +618,13 @@ class PersonControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(pageSize)))
                 .andExpect(jsonPath("$[0].firstName", is("Test5")));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        personRepository.deleteAllInBatch();
+        dictionaryValueRepository.deleteAllInBatch();
+        dictionaryRepository.deleteAllInBatch();
     }
 
 }

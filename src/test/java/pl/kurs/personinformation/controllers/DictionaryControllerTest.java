@@ -27,9 +27,6 @@ class DictionaryControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private DictionaryRepository dictionaryRepository;
 
     @BeforeEach
