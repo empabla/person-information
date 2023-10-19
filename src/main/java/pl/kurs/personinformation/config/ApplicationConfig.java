@@ -20,15 +20,4 @@ public class ApplicationConfig {
         return modelMapper;
     }
 
-    @Bean("threadPoolTaskExecutor")
-    public ThreadPoolTaskExecutor getAsyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(20);
-        executor.setMaxPoolSize(1000);
-        executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.setThreadNamePrefix("Async-");
-        executor.initialize();
-        return executor;
-    }
-
 }

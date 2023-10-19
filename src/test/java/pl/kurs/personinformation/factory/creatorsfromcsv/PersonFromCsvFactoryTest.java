@@ -1,10 +1,11 @@
-package pl.kurs.personinformation.factory.creators;
+package pl.kurs.personinformation.factory.creatorsfromcsv;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.commands.CreatePersonFromCsvCommand;
 import pl.kurs.personinformation.models.DictionaryValue;
@@ -18,25 +19,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = PersonInformationApplication.class)
-class PersonFactoryTest {
+@ActiveProfiles("test")
+class PersonFromCsvFactoryTest {
 
     @Mock
     private DictionaryValueService dictionaryValueService;
 
-    private PersonFactory personFactory;
+    private PersonFromCsvFactory personFromCsvFactory;
 
     @BeforeEach
     public void setUp() {
         dictionaryValueService = Mockito.mock(DictionaryValueService.class);
-        personFactory = new PersonFactory(Set.of(
-                new EmployeeCreator(dictionaryValueService),
-                new StudentCreator(dictionaryValueService),
-                new RetireeCreator(dictionaryValueService)
+        personFromCsvFactory = new PersonFromCsvFactory(Set.of(
+                new EmployeeFromCsvCreator(dictionaryValueService),
+                new StudentFromCsvCreator(dictionaryValueService),
+                new RetireeFromCsvCreator(dictionaryValueService)
         ));
     }
 
     @Test
-    public void testCreateEmployee() {
+    public void shouldCreateEmployeeFromProvidedDataUsingPersonFromCsvFactory() {
         //given
         String[] employeeData = {
                 "Employee", "Mia", "Smith", "78062890123", "167", "63", "miasmith@test.com", "2020-12-01",
@@ -45,7 +47,7 @@ class PersonFactoryTest {
         Mockito.doReturn(new DictionaryValue("Manager")).when(dictionaryValueService).getByName("Manager");
         CreatePersonFromCsvCommand command = new CreatePersonFromCsvCommand("employee", employeeData);
         //when
-        Employee employee = (Employee) personFactory.create(command);
+        Employee employee = (Employee) personFromCsvFactory.create(command);
         //then
         assertNotNull(employee);
         assertEquals("Mia", employee.getFirstName());

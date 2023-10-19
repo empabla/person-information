@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = PersonInformationApplication.class)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class DictionaryValueControllerTest {
 
     @Autowired
@@ -105,7 +107,7 @@ class DictionaryValueControllerTest {
         Dictionary typesDictionary = dictionaryRepository.saveAndFlush(
                 new Dictionary("types")
         );
-        Long dictionaryId = typesDictionary.getId();
+        Long typesDictionaryId = typesDictionary.getId();
         String newPersonType = "volunteer";
         //when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
@@ -120,8 +122,8 @@ class DictionaryValueControllerTest {
                 .get("/api/dictionaryvalues/" + addedNewTypeId))
                 .andExpect(jsonPath("$.id").value(addedNewTypeId))
                 .andExpect(jsonPath("$.name").value(newPersonType))
-                .andExpect(content().json("{\"id\":1,\"name\":\"volunteer\"," +
-                        "\"dictionary\":{\"id\":1,\"name\":\"types\"}}"));
+                .andExpect(content().json("{\"id\":" + addedNewTypeId + ",\"name\":\"volunteer\"," +
+                        "\"dictionary\":{\"id\":" + typesDictionaryId + ",\"name\":\"types\"}}"));
     }
 
     @Test
@@ -135,7 +137,7 @@ class DictionaryValueControllerTest {
         );
         String newPersonType = "employee";
         //when
-        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .post("/api/dictionaryvalues/person-type/" + newPersonType));
         //then
         resultActions
@@ -149,9 +151,6 @@ class DictionaryValueControllerTest {
     @Test
     public void shouldReturnBadRequestForDictionaryValueWithNumbers() throws Exception {
         //given
-        Dictionary typesDictionary = dictionaryRepository.saveAndFlush(
-                new Dictionary("types")
-        );
         String newPersonType = "student2";
         //when
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders

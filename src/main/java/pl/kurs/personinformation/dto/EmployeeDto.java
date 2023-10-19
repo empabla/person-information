@@ -1,5 +1,6 @@
 package pl.kurs.personinformation.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class EmployeeDto extends PersonDto {
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate employmentStartDate;
 
     private String position;

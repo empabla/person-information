@@ -1,4 +1,4 @@
-package pl.kurs.personinformation.factory.creators;
+package pl.kurs.personinformation.factory.creatorsfromcsv;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,7 +8,7 @@ import pl.kurs.personinformation.services.DictionaryValueService;
 
 @Service
 @RequiredArgsConstructor
-public class RetireeCreator implements PersonCreator {
+public class RetireeFromCsvCreator implements PersonFromCsvCreator {
 
     private final DictionaryValueService dictionaryValueService;
 
