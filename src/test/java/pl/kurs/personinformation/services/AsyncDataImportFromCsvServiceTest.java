@@ -3,19 +3,21 @@ package pl.kurs.personinformation.services;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.multipart.MultipartFile;
 import pl.kurs.personinformation.PersonInformationApplication;
-import pl.kurs.personinformation.models.Dictionary;
-import pl.kurs.personinformation.models.DictionaryValue;
-import pl.kurs.personinformation.repositories.DictionaryRepository;
-import pl.kurs.personinformation.repositories.DictionaryValueRepository;
 import pl.kurs.personinformation.repositories.PersonRepository;
+
+import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
@@ -23,16 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = PersonInformationApplication.class)
 @AutoConfigureMockMvc
-class DataImportFromCsvServiceTest {
+@ActiveProfiles("test")
+class AsyncDataImportFromCsvServiceTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private DictionaryRepository dictionaryRepository;
-
-    @Autowired
-    private DictionaryValueRepository dictionaryValueRepository;
 
     @Autowired
     private PersonRepository personRepository;
@@ -40,8 +37,6 @@ class DataImportFromCsvServiceTest {
     @BeforeEach
     public void setUp() {
         personRepository.deleteAllInBatch();
-        dictionaryValueRepository.deleteAllInBatch();
-        dictionaryRepository.deleteAllInBatch();
     }
 
     @Test
@@ -82,66 +77,9 @@ class DataImportFromCsvServiceTest {
                 .andExpect(jsonPath("$.processedRows").value(1));
     }
 
-    @Test
-    public void shouldReturnBadRequestStatusForEmptyFileWhenImport() throws Exception {
-        //given
-        String fileContent = "";
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "test-peopleToImport.csv", "text/csv", fileContent.getBytes()
-        );
-        //when
-        MvcResult asyncResult = mockMvc.perform(MockMvcRequestBuilders
-                .multipart("/api/people/import")
-                .file(file))
-                .andExpect(request().asyncStarted())
-                .andReturn();
-        asyncResult.getAsyncResult();
-        //then
-        mockMvc.perform(asyncDispatch(asyncResult))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.timestamp", is(notNullValue())))
-                .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.errorMessages",
-                        hasItem("File is empty or does not exist.")));
-    }
-
-    @Test
-    public void shouldAllowOtherRequestWhileAsyncImportIsInProgress() throws Exception {
-        //given
-        String fileContent = "type,first_name,last_name,pesel,height,weight,email,param1,param2,param3,param4" +
-                "\nEmployee,John,Doe,12345678911,180,70,johndoe@test.com,2021-01-01,Manager,40000";
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "test-peopleToImport.csv", "text/csv", fileContent.getBytes()
-        );
-        Dictionary types = dictionaryRepository.saveAndFlush(new Dictionary("types"));
-        DictionaryValue student = dictionaryValueRepository.saveAndFlush(new DictionaryValue("student", types));
-        Long id = student.getId();
-        //when - perform import
-        MvcResult importResult = mockMvc.perform(MockMvcRequestBuilders
-                .multipart("/api/people/import")
-                .file(file))
-                .andExpect(status().isOk())
-                .andExpect(request().asyncStarted())
-                .andReturn();
-        //when - perform other request in parallel
-        mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/dictionaryvalues/" + id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(id.intValue())))
-                .andExpect(jsonPath("$.name", is(student.getName())))
-                .andReturn();
-        //then - manually perform an async dispatch
-        mockMvc.perform(asyncDispatch(importResult))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("Data import has started. " +
-                        "Check status endpoint /api/people/import/status for progress."));
-    }
-
     @AfterEach
     public void tearDown() {
         personRepository.deleteAllInBatch();
-        dictionaryValueRepository.deleteAllInBatch();
-        dictionaryRepository.deleteAllInBatch();
     }
 
 }

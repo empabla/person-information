@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.commands.UpdateEmployeeCommand;
 import pl.kurs.personinformation.commands.UpdatePersonCommand;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = PersonInformationApplication.class)
+@ActiveProfiles("test")
 class PersonUpdaterFactoryTest {
 
     @Mock

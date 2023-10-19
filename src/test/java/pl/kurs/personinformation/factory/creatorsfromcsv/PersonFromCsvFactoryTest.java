@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.commands.CreatePersonFromCsvCommand;
 import pl.kurs.personinformation.models.DictionaryValue;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = PersonInformationApplication.class)
+@ActiveProfiles("test")
 class PersonFromCsvFactoryTest {
 
     @Mock

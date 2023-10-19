@@ -70,7 +70,8 @@ public class DataImportFromCsvService {
                             "Constraint violation: UC_PERSON_PESEL"));
                 }
             } catch (Exception e) {
-                future.completeExceptionally(new DataImportFromFileException("Error during data import. " + e.getMessage()));
+                future.completeExceptionally(new DataImportFromFileException("Error during data import. " +
+                        "Invalid file content."));
             } finally {
                 if (!future.isCompletedExceptionally())
                     importStatus.setCompleted(true);

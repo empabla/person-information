@@ -18,7 +18,6 @@ public class ExceptionResponseBody {
     private final String errorCode;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-
     private final LocalDateTime timestamp;
 
 }

@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.kurs.personinformation.PersonInformationApplication;
@@ -25,11 +28,13 @@ import pl.kurs.personinformation.repositories.PersonRepository;
 import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @SpringBootTest(classes = PersonInformationApplication.class)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class PersonControllerTest {
 
     @Autowired
@@ -618,6 +623,53 @@ class PersonControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(pageSize)))
                 .andExpect(jsonPath("$[0].firstName", is("Test5")));
+    }
+
+    @Test
+    public void shouldReturnBadRequestStatusForEmptyFileWhenImport() throws Exception {
+        //given
+        String fileContent = "";
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "test-peopleToImport.csv", "text/csv", fileContent.getBytes()
+        );
+        //when
+        MvcResult asyncResult = mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/api/people/import")
+                .file(file))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+        asyncResult.getAsyncResult();
+        //then
+        mockMvc.perform(asyncDispatch(asyncResult))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.timestamp", is(notNullValue())))
+                .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.errorMessages",
+                        hasItem("File is empty or does not exist.")));
+    }
+
+    @Test
+    public void shouldReturnBadRequestStatusForInvalidFileContentWhenImport() throws Exception {
+        //given
+        String fileContent = "Invalid CSV Data " +
+                "\n Invalid CSV Data";
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "test-peopleToImport.csv", "text/csv", fileContent.getBytes()
+        );
+        //when
+        MvcResult asyncResult = mockMvc.perform(MockMvcRequestBuilders
+                .multipart("/api/people/import")
+                .file(file))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+        asyncResult.getAsyncResult();
+        //then
+        mockMvc.perform(asyncDispatch(asyncResult))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.timestamp", is(notNullValue())))
+                .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.errorMessages",
+                        hasItem("Error during data import. Invalid file content.")));
     }
 
     @AfterEach

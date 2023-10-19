@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.dto.EmployeeDto;
 import pl.kurs.personinformation.models.DictionaryValue;
@@ -20,6 +21,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = PersonInformationApplication.class)
+@ActiveProfiles("test")
 class PersonDtoConverterFactoryTest {
 
     @Mock
