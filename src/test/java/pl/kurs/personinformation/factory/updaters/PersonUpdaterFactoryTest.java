@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.commands.UpdateEmployeeCommand;
@@ -47,6 +48,7 @@ class PersonUpdaterFactoryTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldUpdateEmployeeDataUsingPersonUpdaterFactory() {
         //given
         UpdatePersonCommand updateCommand = new UpdateEmployeeCommand(

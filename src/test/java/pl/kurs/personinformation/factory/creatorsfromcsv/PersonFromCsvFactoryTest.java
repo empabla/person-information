@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.commands.CreatePersonFromCsvCommand;
@@ -38,6 +39,7 @@ class PersonFromCsvFactoryTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldCreateEmployeeFromProvidedDataUsingPersonFromCsvFactory() {
         //given
         String[] employeeData = {

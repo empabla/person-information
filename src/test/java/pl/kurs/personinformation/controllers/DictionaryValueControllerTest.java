@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -47,6 +48,7 @@ class DictionaryValueControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnOkStatusWhenUploadFromCorrectCsvFile() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(new Dictionary("types"));
@@ -64,6 +66,7 @@ class DictionaryValueControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnBadRequestStatusWhenDictionaryNotExist() throws Exception {
         //given
         String fileContent = "name,dictionary_id\nemployee,1";
@@ -83,6 +86,7 @@ class DictionaryValueControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnBadRequestStatusForEmptyFile() throws Exception {
         //given
         String fileContent = "";
@@ -102,6 +106,7 @@ class DictionaryValueControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnOkStatusAndAddNewPersonTypeToTypesDictionary() throws Exception {
         //given
         Dictionary typesDictionary = dictionaryRepository.saveAndFlush(
@@ -127,6 +132,7 @@ class DictionaryValueControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnBadRequestStatusWhenDictionaryValueAlreadyExistsInTypesDictionary() throws Exception {
         //given
         Dictionary typesDictionary = dictionaryRepository.saveAndFlush(
@@ -149,6 +155,7 @@ class DictionaryValueControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnBadRequestForDictionaryValueWithNumbers() throws Exception {
         //given
         String newPersonType = "student2";
