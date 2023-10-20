@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.dto.EmployeeDto;
@@ -43,6 +44,7 @@ class PersonDtoConverterFactoryTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldConvertEmployeeToEmployeeDtoUsingPersonDtoConverterFactory() {
         // given
         DictionaryValue employeeDV = new DictionaryValue("Employee");

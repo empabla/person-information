@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -61,6 +62,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnOkStatusWhenAddCorrectNewPositionToEmployee() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -108,6 +110,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnBadRequestWhenAddNewPositionToEmployeeWithPositionWithoutEndDate() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -132,7 +135,7 @@ class EmployeePositionControllerTest {
                         40000.00)
         );
         Long employeeId = employee.getId();
-        EmployeePosition employeePosition = employeePositionRepository.saveAndFlush(
+        employeePositionRepository.saveAndFlush(
                 new EmployeePosition(employee, newPosition, LocalDate.of(2021, 2, 1),
                         null, 50000.00)
         );
@@ -155,6 +158,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnBadRequestWhenAddNewPositionWithStartDateBeforeEmploymentStartDate() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -198,6 +202,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnBadRequestWhenAddNewPositionIfNewPositionOverlapsExistingOne() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -222,7 +227,7 @@ class EmployeePositionControllerTest {
                         40000.00)
         );
         Long employeeId = employee.getId();
-        EmployeePosition employeePosition = employeePositionRepository.saveAndFlush(
+        employeePositionRepository.saveAndFlush(
                 new EmployeePosition(employee, newPosition, LocalDate.of(2021, 2, 1),
                         LocalDate.of(2022, 2, 1), 50000.00)
         );
@@ -245,6 +250,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnNotFoundWhenAddPositionThatNotExist() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -284,6 +290,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnOkStatusWhenAddCorrectEndDateAfterStartDateForCurrentPosition() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -334,6 +341,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnBadRequestWhenAddEmptyEndDateForPositionWhenUpdate() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -379,6 +387,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnListOfPositionsWhenGetAllEmployeePositionsByEmployeeId() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -402,11 +411,11 @@ class EmployeePositionControllerTest {
                         LocalDate.of(2015, 1, 1), managerDV, 40000.00)
         );
         Long employeeId = employee.getId();
-        EmployeePosition employeePosition1 = employeePositionRepository.saveAndFlush(
+        employeePositionRepository.saveAndFlush(
                 new EmployeePosition(employee, managerDV, LocalDate.of(2021, 2, 1),
                         LocalDate.of(2023, 9, 15), 50000.00)
         );
-        EmployeePosition employeePosition2 = employeePositionRepository.saveAndFlush(
+        employeePositionRepository.saveAndFlush(
                 new EmployeePosition(employee, directorDV, LocalDate.of(2023, 9, 16),
                         null, 70000.00)
         );
@@ -427,6 +436,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnBadRequestWhenPositionNotBelongsToEmployeeWithProvidedId() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -471,6 +481,7 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldDeleteEmployeePositionById() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -508,9 +519,10 @@ class EmployeePositionControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldReturnNotFoundStatusForNotExistingIdWhenGetAllByEmployeeId() throws Exception {
         //given
-        Long employeeId = 10L;
+        int employeeId = 10;
         //when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/employees/" + employeeId + "/positions"));

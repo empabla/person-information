@@ -1,4 +1,4 @@
-package pl.kurs.personinformation.services;
+package pl.kurs.personinformation.services.security;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.kurs.personinformation.models.security.AppRole;
 import pl.kurs.personinformation.models.security.AppUser;
-import pl.kurs.personinformation.repositories.AppUserRepository;
+import pl.kurs.personinformation.repositories.security.AppUserRepository;
 
 import java.util.Set;
 
@@ -23,27 +23,23 @@ public class AppUserService implements UserDetailsService {
 
     @PostConstruct
     public void init() {
-        AppRole adminRole = new AppRole("ROLE_ADMIN");
-        AppUser admin = new AppUser(
-                "admin", passwordEncoder.encode("admin"), Set.of(adminRole)
-        );
-        appUserRepository.save(admin);
-        AppRole importerRole = new AppRole("ROLE_IMPORTER");
-        AppUser importer = new AppUser(
-                "importer", passwordEncoder.encode("importer"), Set.of(importerRole)
-        );
-        appUserRepository.save(importer);
-        AppRole employeeRole = new AppRole("ROLE_EMPLOYEE");
-        AppUser employee = new AppUser(
-                "employee", passwordEncoder.encode("employee"), Set.of(employeeRole)
-        );
-        appUserRepository.save(employee);
+        createUserIfNotExists("admin", "ROLE_ADMIN", "admin");
+        createUserIfNotExists("importer", "ROLE_IMPORTER", "importer");
+        createUserIfNotExists("employee", "ROLE_EMPLOYEE", "employee");
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return appUserRepository.findByUsernameWithRoles(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
+    }
+
+    private void createUserIfNotExists(String username, String roleName, String password) {
+        if (appUserRepository.findByUsernameWithRoles(username).isEmpty()) {
+            AppRole role = new AppRole(roleName);
+            AppUser user = new AppUser(username, passwordEncoder.encode(password), Set.of(role));
+            appUserRepository.save(user);
+        }
     }
 
 }

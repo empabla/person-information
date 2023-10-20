@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -60,6 +61,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldGetPersonByFirstName() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -74,7 +76,7 @@ class PersonControllerTest {
         DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
                 new DictionaryValue("manager", positions)
         );
-        Employee employee = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Employee(employeeDV, "John", "Doe", "12345678911", 180, 70,
                         "john.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
                         40000.00));
@@ -88,6 +90,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldGetAllPeopleByEmployeeType() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -102,12 +105,12 @@ class PersonControllerTest {
         DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
                 new DictionaryValue("manager", positions)
         );
-        Employee employee1 = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Employee(employeeDV, "John", "Doe", "12345678911", 180, 70,
                         "john.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
                         40000.00)
         );
-        Employee employee2 = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Employee(employeeDV, "Adam", "Wick", "12345678912", 170, 80,
                         "adam.wick@test.com", LocalDate.of(2021, 2, 2), managerDV,
                         50000.00));
@@ -144,6 +147,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldGetSinglePersonByEmployeeTypeAndName() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -205,6 +209,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldGetSinglePersonByLastNameAndWeighRange() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -252,6 +257,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldGetSinglePersonByStudentTypeAndLastNameAndSex() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -281,7 +287,7 @@ class PersonControllerTest {
         DictionaryValue fieldOfStudyDV = dictionaryValueRepository.saveAndFlush(
                 new DictionaryValue("test field", fieldsOfStudy)
         );
-        Employee employee = personRepository.saveAndFlush(
+        personRepository.saveAndFlush(
                 new Employee(employeeDV, "Anna", "Doe", "12345678921", 165, 55,
                         "anna.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
                         40000.00)
@@ -318,6 +324,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldGetSinglePersonByPositionAndEmploymentStartDateRange() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -365,6 +372,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldUpdateEmployeeLastNameAndPositionAndSalary() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -413,6 +421,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnConflictStatusForOptimisticLockingExceptionWhenUpdateOutOfDateVersion() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -470,6 +479,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnNotFoundStatusForNotExistingIdWhenUpdate() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -505,6 +515,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnConstraintViolationExceptionForTheSamePesel() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -550,6 +561,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnBadRequestForNotValidPeselAndHeightWhenUpdate() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -593,6 +605,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void shouldPaginate10ResultsIntoTwoPagesWith5Results() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
@@ -626,6 +639,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnBadRequestStatusForEmptyFileWhenImport() throws Exception {
         //given
         String fileContent = "";
@@ -649,6 +663,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void shouldReturnBadRequestStatusForInvalidFileContentWhenImport() throws Exception {
         //given
         String fileContent = "Invalid CSV Data " +
