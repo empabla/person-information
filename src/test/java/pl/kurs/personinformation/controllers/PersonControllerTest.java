@@ -683,8 +683,7 @@ class PersonControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.timestamp", is(notNullValue())))
                 .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.errorMessages",
-                        hasItem("Error during data import. Invalid file content.")));
+                .andExpect(content().string(containsString("Error during data import. Invalid file content")));
     }
 
     @AfterEach

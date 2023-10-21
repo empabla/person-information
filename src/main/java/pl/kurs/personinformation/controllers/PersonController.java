@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.kurs.personinformation.commands.CreatePersonCommand;
 import pl.kurs.personinformation.commands.UpdatePersonCommand;
 import pl.kurs.personinformation.dto.ImportStatusDto;
 import pl.kurs.personinformation.dto.PersonDto;
@@ -60,6 +61,14 @@ public class PersonController {
         return ResponseEntity.ok(personDtoList);
     }
 
+    @PostMapping
+    @ApiOperation(value = "Add a new person", response = PersonDto.class)
+    public ResponseEntity<PersonDto> createPerson(@RequestBody @Valid CreatePersonCommand createPeronCommand) {
+        Person personForSave = personService.add(createPeronCommand);
+        PersonDto personDto = personDtoConverterFactory.convert(personForSave);
+        return ResponseEntity.ok(personDto);
+    }
+
     @PutMapping
     @ApiOperation(value = "Update person data", response = PersonDto.class)
     public ResponseEntity<PersonDto> updatePerson(@RequestBody @Valid UpdatePersonCommand updatePersonCommand) {
@@ -71,7 +80,8 @@ public class PersonController {
     @PostMapping("/import")
     @ApiOperation(value = "Import data from a CSV file asynchronously",
             notes = "This endpoint allows you to import data from a CSV file in an asynchronous manner. " +
-                    "It processes the CSV file and saves the data to the database.", response = StatusDto.class)
+                    "It processes the CSV file and saves the data to the database. " +
+                    "Only one import can be performed at a time", response = StatusDto.class)
     public CompletableFuture<ResponseEntity<StatusDto>> importPeople(@RequestParam("file") MultipartFile file) {
         return dataImportFromCsvService.importPeopleFromCsvFile(file)
                 .thenApply(result -> ResponseEntity.ok(new StatusDto("Data import has started. Check status endpoint " +

@@ -7,4 +7,6 @@ public interface DictionaryRepository extends JpaRepository<Dictionary, Long> {
 
     Dictionary findByName(String name);
 
+    boolean existsByName(String name);
+
 }

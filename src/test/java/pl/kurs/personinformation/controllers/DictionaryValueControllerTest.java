@@ -52,7 +52,7 @@ class DictionaryValueControllerTest {
     public void shouldReturnOkStatusWhenUploadFromCorrectCsvFile() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(new Dictionary("types"));
-        String fileContent = "name,dictionary_id\nemployee," + types.getId();
+        String fileContent = "name,dictionary_id\nemployee," + types.getName();
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test-dictionaryValues.csv", "text/csv", fileContent.getBytes()
         );
@@ -69,7 +69,7 @@ class DictionaryValueControllerTest {
     @WithMockUser
     public void shouldReturnBadRequestStatusWhenDictionaryNotExist() throws Exception {
         //given
-        String fileContent = "name,dictionary_id\nemployee,1";
+        String fileContent = "name,dictionary_name\nemployee,types";
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test-dictionaryValues.csv", "text/csv", fileContent.getBytes()
         );
@@ -82,7 +82,7 @@ class DictionaryValueControllerTest {
                 .andExpect(jsonPath("$.timestamp", is(notNullValue())))
                 .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"))
                 .andExpect(jsonPath("$.errorMessages",
-                        hasItem("Error during data import. Dictionary with id 1 not found.")));
+                        hasItem("Error during data import. Dictionary 'types' not found.")));
     }
 
     @Test

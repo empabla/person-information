@@ -32,10 +32,11 @@ public class DictionaryValueService {
     }
 
     public DictionaryValue getByName(String name) {
+        validateDictionaryValue(name);
         return dictionaryValueRepository.findByName(
                 Optional.ofNullable(name)
                         .orElseThrow(() -> new DictionaryValueNotFoundException
-                                ("Dictionary value '" + name + "' not found.")));
+                                ("Invalid value - provided name is empty or null.")));
     }
 
     public DictionaryValue getById(Long id) {
@@ -47,7 +48,7 @@ public class DictionaryValueService {
 
     public void validateDictionaryValue(String name) {
         if (!dictionaryValueRepository.existsByName(name)) {
-            throw new DictionaryValueNotFoundException("Value '" + name + "' not found.");
+            throw new DictionaryValueNotFoundException("Dictionary value '" + name + "' not found.");
         }
     }
 

@@ -2,9 +2,9 @@ package pl.kurs.personinformation.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.kurs.personinformation.exceptions.WrongEntityException;
-import pl.kurs.personinformation.exceptions.WrongIdException;
 import pl.kurs.personinformation.exceptions.DictionaryNotFoundException;
+import pl.kurs.personinformation.exceptions.DictionaryValueNotFoundException;
+import pl.kurs.personinformation.exceptions.WrongEntityException;
 import pl.kurs.personinformation.models.Dictionary;
 import pl.kurs.personinformation.repositories.DictionaryRepository;
 
@@ -25,18 +25,18 @@ public class DictionaryService {
         );
     }
 
-    public Dictionary getById(Long id) {
-        return dictionaryRepository.findById(
-                Optional.ofNullable(id)
-                        .orElseThrow(() -> new WrongIdException("Wrong id."))
-        ).orElseThrow(() -> new DictionaryNotFoundException("Dictionary with id " + id + " not found."));
-    }
-
     public Dictionary getByName(String name) {
+        validateDictionary(name);
         return dictionaryRepository.findByName(
                 Optional.ofNullable(name)
                         .orElseThrow(() -> new DictionaryNotFoundException
-                                ("Dictionary '" + name + "' not found.")));
+                                ("Invalid value - provided name is empty or null.")));
+    }
+
+    public void validateDictionary(String name) {
+        if (!dictionaryRepository.existsByName(name)) {
+            throw new DictionaryValueNotFoundException("Dictionary '" + name + "' not found.");
+        }
     }
 
 }
