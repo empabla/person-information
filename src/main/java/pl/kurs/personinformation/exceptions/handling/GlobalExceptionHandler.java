@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -118,6 +119,16 @@ public class GlobalExceptionHandler {
                 "' / message: " + errorMessage);
         ExceptionResponseBody body = new ExceptionResponseBody(
                 errorMessages,
+                "BAD_REQUEST",
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponseBody> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        ExceptionResponseBody body = new ExceptionResponseBody(
+                List.of(e.getMessage()),
                 "BAD_REQUEST",
                 LocalDateTime.now()
         );

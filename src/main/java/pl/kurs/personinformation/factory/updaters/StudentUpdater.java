@@ -40,10 +40,8 @@ public class StudentUpdater implements PersonUpdater {
             studentForUpdate.setWeight(studentCommand.getWeight());
             studentForUpdate.setEmail(studentCommand.getEmail());
             studentForUpdate.setVersion(studentCommand.getVersion());
-            dictionaryValueService.validateDictionaryValue(studentCommand.getUniversityName());
             studentForUpdate.setUniversityName(dictionaryValueService.getByName(studentCommand.getUniversityName()));
             studentForUpdate.setEnrollmentYear(studentCommand.getEnrollmentYear());
-            dictionaryValueService.validateDictionaryValue(studentCommand.getFieldOfStudy());
             studentForUpdate.setFieldOfStudy(dictionaryValueService.getByName(studentCommand.getFieldOfStudy()));
             studentForUpdate.setScholarship(studentCommand.getScholarship());
             return studentForUpdate;

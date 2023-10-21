@@ -1,12 +1,13 @@
 package pl.kurs.personinformation.factory.creators;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import pl.kurs.personinformation.commands.CreateEmployeeCommand;
+import pl.kurs.personinformation.commands.CreatePersonCommand;
 import pl.kurs.personinformation.models.Employee;
 import pl.kurs.personinformation.models.Person;
 import pl.kurs.personinformation.services.DictionaryValueService;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -14,24 +15,27 @@ public class EmployeeCreator implements PersonCreator {
 
     private final DictionaryValueService dictionaryValueService;
 
+    private final ModelMapper modelMapper;
+
     @Override
     public String getType() {
         return "employee";
     }
 
     @Override
-    public Person createPerson(Map<String, Object> parameters) {
+    public Person createPerson(CreatePersonCommand createPersonCommand) {
+        CreateEmployeeCommand employeeCommand = modelMapper.map(createPersonCommand, CreateEmployeeCommand.class);
         return new Employee(
                 dictionaryValueService.getByName(this.getType()),
-                getStringParameter("firstName", parameters),
-                getStringParameter("lastName", parameters),
-                getStringParameter("pesel", parameters),
-                getIntegerParameter("height", parameters),
-                getIntegerParameter("weight", parameters),
-                getStringParameter("email", parameters),
-                getLocalDateParameter("employmentStartDate", parameters),
-                dictionaryValueService.getByName(getStringParameter("currentPosition", parameters)),
-                getDoubleParameter("salary", parameters)
+                employeeCommand.getFirstName(),
+                employeeCommand.getLastName(),
+                employeeCommand.getPesel(),
+                employeeCommand.getHeight(),
+                employeeCommand.getWeight(),
+                employeeCommand.getEmail(),
+                employeeCommand.getEmploymentStartDate(),
+                dictionaryValueService.getByName(employeeCommand.getPosition()),
+                employeeCommand.getSalary()
         );
     }
 

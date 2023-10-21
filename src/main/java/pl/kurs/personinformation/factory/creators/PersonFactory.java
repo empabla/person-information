@@ -23,7 +23,7 @@ public class PersonFactory {
 
     public Person create(CreatePersonCommand command) {
         return creators.get(command.getType().toLowerCase())
-                .createPerson(command.getParameters());
+                .createPerson(command);
     }
 
 }
