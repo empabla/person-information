@@ -2,9 +2,7 @@ package pl.kurs.personinformation.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.kurs.personinformation.exceptions.DictionaryNotFoundException;
-import pl.kurs.personinformation.exceptions.DictionaryValueNotFoundException;
-import pl.kurs.personinformation.exceptions.WrongEntityException;
+import pl.kurs.personinformation.exceptions.*;
 import pl.kurs.personinformation.models.Dictionary;
 import pl.kurs.personinformation.repositories.DictionaryRepository;
 
@@ -17,7 +15,15 @@ public class DictionaryService {
 
     private final DictionaryRepository dictionaryRepository;
 
+    public boolean existsByName(String name) {
+        return dictionaryRepository.existsByName(name.toLowerCase());
+    }
+
     public Dictionary add(Dictionary dictionary) {
+        if (existsByName(dictionary.getName())) {
+            throw new DictionaryAlreadyExists("Dictionary '" + dictionary + "' already exists.");
+        }
+        dictionary.setName(dictionary.getName().toLowerCase());
         return dictionaryRepository.save(
                 Optional.ofNullable(dictionary)
                         .filter(x -> Objects.isNull(x.getId()))
@@ -34,7 +40,7 @@ public class DictionaryService {
     }
 
     public void validateDictionary(String name) {
-        if (!dictionaryRepository.existsByName(name)) {
+        if (!dictionaryRepository.existsByName(name.toLowerCase())) {
             throw new DictionaryValueNotFoundException("Dictionary '" + name + "' not found.");
         }
     }

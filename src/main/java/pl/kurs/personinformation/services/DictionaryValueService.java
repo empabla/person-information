@@ -17,13 +17,14 @@ public class DictionaryValueService {
     private final DictionaryValueRepository dictionaryValueRepository;
 
     public boolean existsByName(String name) {
-        return dictionaryValueRepository.existsByName(name);
+        return dictionaryValueRepository.existsByName(name.toLowerCase());
     }
 
     public DictionaryValue add(DictionaryValue dictionaryValue) {
         if (existsByName(dictionaryValue.getName())) {
             throw new DictionaryValueAlreadyExistsException("DictionaryValue '" + dictionaryValue + "' already exists.");
         }
+        dictionaryValue.setName(dictionaryValue.getName().toLowerCase());
         return dictionaryValueRepository.save(
                 Optional.ofNullable(dictionaryValue)
                         .filter(x -> Objects.isNull(x.getId()))
@@ -34,7 +35,7 @@ public class DictionaryValueService {
     public DictionaryValue getByName(String name) {
         validateDictionaryValue(name);
         return dictionaryValueRepository.findByName(
-                Optional.ofNullable(name)
+                Optional.ofNullable(name.toLowerCase())
                         .orElseThrow(() -> new DictionaryValueNotFoundException
                                 ("Invalid value - provided name is empty or null.")));
     }
@@ -47,7 +48,7 @@ public class DictionaryValueService {
     }
 
     public void validateDictionaryValue(String name) {
-        if (!dictionaryValueRepository.existsByName(name)) {
+        if (!dictionaryValueRepository.existsByName(name.toLowerCase())) {
             throw new DictionaryValueNotFoundException("Dictionary value '" + name + "' not found.");
         }
     }

@@ -34,7 +34,7 @@ public class EmployeeCreator implements PersonCreator {
                 employeeCommand.getWeight(),
                 employeeCommand.getEmail(),
                 employeeCommand.getEmploymentStartDate(),
-                dictionaryValueService.getByName(employeeCommand.getCurrentPosition()),
+                dictionaryValueService.getByName(employeeCommand.getCurrentPosition().toLowerCase()),
                 employeeCommand.getCurrentSalary()
         );
     }

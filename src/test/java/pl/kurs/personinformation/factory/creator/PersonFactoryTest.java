@@ -1,4 +1,4 @@
-package pl.kurs.personinformation.factory.updaters;
+package pl.kurs.personinformation.factory.creator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,58 +7,54 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
-import pl.kurs.personinformation.commands.UpdateEmployeeCommand;
-import pl.kurs.personinformation.commands.UpdatePersonCommand;
+import pl.kurs.personinformation.commands.CreateEmployeeCommand;
+import pl.kurs.personinformation.commands.CreatePersonCommand;
+import pl.kurs.personinformation.factory.creators.EmployeeCreator;
+import pl.kurs.personinformation.factory.creators.PersonFactory;
+import pl.kurs.personinformation.factory.creators.RetireeCreator;
+import pl.kurs.personinformation.factory.creators.StudentCreator;
 import pl.kurs.personinformation.models.DictionaryValue;
 import pl.kurs.personinformation.models.Employee;
-import pl.kurs.personinformation.repositories.PersonRepository;
 import pl.kurs.personinformation.services.DictionaryValueService;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = PersonInformationApplication.class)
 @ActiveProfiles("test")
-class PersonUpdaterFactoryTest {
+public class PersonFactoryTest {
 
     @Mock
     private DictionaryValueService dictionaryValueService;
 
-    @Mock
-    private PersonRepository personRepository;
-
-    private PersonUpdaterFactory updaterFactory;
+    private PersonFactory personFactory;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        updaterFactory = new PersonUpdaterFactory(Set.of(
-                new EmployeeUpdater(dictionaryValueService, personRepository, new ModelMapper()),
-                new StudentUpdater(dictionaryValueService, personRepository, new ModelMapper()),
-                new RetireeUpdater(personRepository, new ModelMapper())
+        personFactory = new PersonFactory(Set.of(
+                new EmployeeCreator(dictionaryValueService, new ModelMapper()),
+                new StudentCreator(dictionaryValueService, new ModelMapper()),
+                new RetireeCreator(dictionaryValueService, new ModelMapper())
         ));
     }
 
     @Test
-    public void shouldUpdateEmployeeDataUsingPersonUpdaterFactory() {
+    public void shouldCreateNewEmployeeUsingPersonFactory() {
         //given
-        UpdatePersonCommand updateCommand = new UpdateEmployeeCommand(
-                1L, "Employee", "John", "Doe", "12345678911", 180, 70,
-                "johndoe@test.com", 0L, LocalDate.of(2021, 1, 1),
+        CreatePersonCommand createCommand = new CreateEmployeeCommand(
+                "employee", "John", "Doe", "12345678911", 180, 70,
+                "johndoe@test.com", LocalDate.of(2021, 1, 1),
                 "director", 100000.00
         );
-        when(personRepository.findById(1L)).thenReturn(Optional.of(new Employee()));
         Mockito.doReturn(new DictionaryValue("director")).when(dictionaryValueService).getByName("director");
         //when
-        Employee employee = (Employee) updaterFactory.update(updateCommand);
+        Employee employee = (Employee) personFactory.create(createCommand);
         //then
         assertNotNull(employee);
         assertEquals("John", employee.getFirstName());

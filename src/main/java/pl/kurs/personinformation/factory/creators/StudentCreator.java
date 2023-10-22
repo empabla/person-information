@@ -33,9 +33,9 @@ public class StudentCreator implements PersonCreator {
                 studentCommand.getHeight(),
                 studentCommand.getWeight(),
                 studentCommand.getEmail(),
-                dictionaryValueService.getByName(studentCommand.getUniversityName()),
+                dictionaryValueService.getByName(studentCommand.getUniversityName().toLowerCase()),
                 studentCommand.getEnrollmentYear(),
-                dictionaryValueService.getByName(studentCommand.getFieldOfStudy()),
+                dictionaryValueService.getByName(studentCommand.getFieldOfStudy().toLowerCase()),
                 studentCommand.getScholarship()
         );
     }
