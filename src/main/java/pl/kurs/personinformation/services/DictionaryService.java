@@ -1,6 +1,7 @@
 package pl.kurs.personinformation.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import pl.kurs.personinformation.exceptions.*;
 import pl.kurs.personinformation.models.Dictionary;
@@ -31,6 +32,7 @@ public class DictionaryService {
         );
     }
 
+    @Cacheable("dictionaries")
     public Dictionary getByName(String name) {
         validateDictionary(name);
         return dictionaryRepository.findByName(

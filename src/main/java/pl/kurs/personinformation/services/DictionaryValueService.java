@@ -1,6 +1,7 @@
 package pl.kurs.personinformation.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import pl.kurs.personinformation.exceptions.*;
 import pl.kurs.personinformation.models.Dictionary;
@@ -32,6 +33,7 @@ public class DictionaryValueService {
         );
     }
 
+    @Cacheable("dictionaryValues")
     public DictionaryValue getByName(String name) {
         validateDictionaryValue(name);
         return dictionaryValueRepository.findByName(
