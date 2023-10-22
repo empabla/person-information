@@ -209,7 +209,7 @@ class PersonControllerTest {
 
     @Test
     @WithMockUser
-    public void shouldGetSinglePersonByLastNameAndWeighRange() throws Exception {
+    public void shouldGetSinglePersonByLastNameAndWeightRange() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
                 new Dictionary("types")
@@ -324,7 +324,7 @@ class PersonControllerTest {
 
     @Test
     @WithMockUser
-    public void shouldGetSinglePersonByPositionAndEmploymentStartDateRange() throws Exception {
+    public void shouldGetSingleEmployeeByPositionAndEmploymentStartDateRange() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
                 new Dictionary("types")
@@ -350,7 +350,7 @@ class PersonControllerTest {
         );
         //when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/people?position=manager&employmentStartDate=from2021-01-01,to2021-12-31"));
+                .get("/api/people?type=employee&position=manager&employmentStartDate=from2021-01-01,to2021-12-31"));
         //then
         resultActions
                 .andExpect(status().isOk())
@@ -365,6 +365,54 @@ class PersonControllerTest {
                             "employmentStartDate": "2021-01-01",
                             "currentPosition": "manager",
                             "currentSalary": 40000.00
+                          }
+                        ]
+                        """));
+    }
+
+    @Test
+    @WithMockUser
+    public void shouldGetSingleEmployeeByPositionAndFirstName() throws Exception {
+        //given
+        Dictionary types = dictionaryRepository.saveAndFlush(
+                new Dictionary("types")
+        );
+        Dictionary positions = dictionaryRepository.saveAndFlush(
+                new Dictionary("positions")
+        );
+        DictionaryValue employeeDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("employee", types)
+        );
+        DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("manager", positions)
+        );
+        personRepository.saveAndFlush(
+                new Employee(employeeDV, "John", "Doe", "12345678911", 180, 70,
+                        "john.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
+                        40000.00)
+        );
+        personRepository.saveAndFlush(
+                new Employee(employeeDV, "Tom", "Doe", "12345678912", 170, 60,
+                        "tom.doe@test.com", LocalDate.of(2022, 1, 1), managerDV,
+                        50000.00)
+        );
+        //when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/people?type=employee&firstName=Tom&position=manager"));
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        [
+                         {
+                            "type": "employee",
+                            "firstName": "Tom",
+                            "lastName": "Doe",
+                            "email": "tom.doe@test.com",
+                            "version": 0,
+                            "employmentStartDate": "2022-01-01",
+                            "currentPosition": "manager",
+                            "currentSalary": 50000.00
                           }
                         ]
                         """));

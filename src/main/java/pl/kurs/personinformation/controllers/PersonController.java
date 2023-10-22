@@ -48,6 +48,7 @@ public class PersonController {
                     "- for numerical parameters, specify the range: 'parameter=fromX,toY', where X and Y " +
                     "are the limits of the closed range;" +
                     "- for gender, specify 'sex=m' for a man and 'sex=w' for a woman." +
+                    "Provide in the URL 'type=value' parameter when filtering by a type-specific parameter." +
                     "Provide pageable if required: 'page=A&size=B, where A - page number, B - page size.",
             response = PersonDto.class,
             responseContainer = "List")
