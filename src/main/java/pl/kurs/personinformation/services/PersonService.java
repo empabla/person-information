@@ -16,6 +16,7 @@ import pl.kurs.personinformation.commands.UpdatePersonCommand;
 import pl.kurs.personinformation.exceptions.*;
 import pl.kurs.personinformation.factory.creators.PersonFactory;
 import pl.kurs.personinformation.factory.updaters.PersonUpdaterFactory;
+import pl.kurs.personinformation.models.EmployeePosition;
 import pl.kurs.personinformation.models.Person;
 import pl.kurs.personinformation.repositories.PersonRepository;
 
@@ -69,6 +70,11 @@ public class PersonService {
                 Optional.ofNullable(id)
                         .orElseThrow(() -> new WrongIdException("Wrong id."))
         ).orElseThrow(() -> new PersonNotFoundException("Person with id " + id + " not found."));
+    }
+
+    public void deleteById(Long id) {
+        Person personToDelete = getById(id);
+        personRepository.delete(personToDelete);
     }
 
 }

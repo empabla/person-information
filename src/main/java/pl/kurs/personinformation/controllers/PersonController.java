@@ -8,7 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import pl.kurs.personinformation.commands.UpdatePersonCommand;
 import pl.kurs.personinformation.dto.ImportStatusDto;
 import pl.kurs.personinformation.dto.PersonDto;
 import pl.kurs.personinformation.dto.StatusDto;
-import pl.kurs.personinformation.exceptions.DataImportFromFileException;
 import pl.kurs.personinformation.factory.converters.PersonDtoConverterFactory;
 import pl.kurs.personinformation.models.ImportStatus;
 import pl.kurs.personinformation.models.Person;
@@ -63,7 +61,7 @@ public class PersonController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get a person based on id", response = PersonDto.class)
+    @ApiOperation(value = "Get a person by ID", response = PersonDto.class)
     public ResponseEntity<PersonDto> getPersonById(@PathVariable("id") Long id) {
         Person person = personService.getById(id);
         PersonDto personDto = personDtoConverterFactory.convert(person);
@@ -103,6 +101,13 @@ public class PersonController {
         ImportStatus importStatus = dataImportFromCsvService.getImportStatus();
         ImportStatusDto importStatusDto = modelMapper.map(importStatus, ImportStatusDto.class);
         return ResponseEntity.ok(importStatusDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete person by ID", response = StatusDto.class)
+    public ResponseEntity<StatusDto> deletePersonById(@PathVariable("id") Long id) {
+        personService.deleteById(id);
+        return ResponseEntity.ok(new StatusDto("Person with id " + id + " deleted"));
     }
 
 }

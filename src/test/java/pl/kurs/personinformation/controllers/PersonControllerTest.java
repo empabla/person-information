@@ -20,10 +20,7 @@ import pl.kurs.personinformation.commands.CreateEmployeeCommand;
 import pl.kurs.personinformation.commands.CreatePersonCommand;
 import pl.kurs.personinformation.commands.UpdateEmployeeCommand;
 import pl.kurs.personinformation.commands.UpdatePersonCommand;
-import pl.kurs.personinformation.models.Dictionary;
-import pl.kurs.personinformation.models.DictionaryValue;
-import pl.kurs.personinformation.models.Employee;
-import pl.kurs.personinformation.models.Student;
+import pl.kurs.personinformation.models.*;
 import pl.kurs.personinformation.repositories.DictionaryRepository;
 import pl.kurs.personinformation.repositories.DictionaryValueRepository;
 import pl.kurs.personinformation.repositories.PersonRepository;
@@ -736,6 +733,38 @@ class PersonControllerTest {
                           "currentSalary": 40000.00
                         },
                         """));
+    }
+
+    @Test
+    @WithMockUser
+    public void shouldDeletePersonById() throws Exception {
+        //given
+        Dictionary types = dictionaryRepository.saveAndFlush(
+                new Dictionary("types")
+        );
+        Dictionary positions = dictionaryRepository.saveAndFlush(
+                new Dictionary("positions")
+        );
+        DictionaryValue employeeDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("employee", types)
+        );
+        DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("manager", positions)
+        );
+        Employee employee = personRepository.saveAndFlush(
+                new Employee(employeeDV, "John", "Doe",
+                        "12345678911", 180, 70, "john.doe@test.com",
+                        LocalDate.of(2021, 1, 1), managerDV, 40000.00)
+        );
+        Long personId = employee.getId();
+        //when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/api/people/" + personId));
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status")
+                        .value("Person with id " + personId + " deleted"));
     }
 
     @AfterEach
