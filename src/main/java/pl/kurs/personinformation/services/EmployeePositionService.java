@@ -81,7 +81,7 @@ public class EmployeePositionService {
         return currentPosition;
     }
 
-    public void delete(Long employeeId, Long positionId) {
+    public void deleteById(Long employeeId, Long positionId) {
         EmployeePosition positionToDelete = getById(positionId);
         if (!positionToDelete.getEmployee().getId().equals(employeeId)) {
             throw new PositionNotBelongToEmployeeException(

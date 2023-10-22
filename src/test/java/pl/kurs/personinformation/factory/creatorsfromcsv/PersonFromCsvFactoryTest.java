@@ -39,14 +39,13 @@ class PersonFromCsvFactoryTest {
     }
 
     @Test
-    @WithMockUser
     public void shouldCreateEmployeeFromProvidedDataUsingPersonFromCsvFactory() {
         //given
         String[] employeeData = {
-                "Employee", "Mia", "Smith", "78062890123", "167", "63", "miasmith@test.com", "2020-12-01",
-                "Manager", "95000"
+                "employee", "Mia", "Smith", "78062890123", "167", "63", "miasmith@test.com", "2020-12-01",
+                "manager", "95000"
         };
-        Mockito.doReturn(new DictionaryValue("Manager")).when(dictionaryValueService).getByName("Manager");
+        Mockito.doReturn(new DictionaryValue("manager")).when(dictionaryValueService).getByName("manager");
         CreatePersonFromCsvCommand command = new CreatePersonFromCsvCommand("employee", employeeData);
         //when
         Employee employee = (Employee) personFromCsvFactory.create(command);
@@ -59,7 +58,7 @@ class PersonFromCsvFactoryTest {
         assertEquals(63, employee.getWeight());
         assertEquals("miasmith@test.com", employee.getEmail());
         assertEquals(LocalDate.of(2020, 12, 01), employee.getEmploymentStartDate());
-        assertEquals("Manager", employee.getCurrentPosition().getName());
+        assertEquals("manager", employee.getCurrentPosition().getName());
         assertEquals(95000.00, employee.getCurrentSalary());
     }
 

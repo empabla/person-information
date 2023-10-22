@@ -26,6 +26,7 @@ public class StudentDtoConverter implements PersonDtoConverter {
     public PersonDto convert(Person person) {
         StudentDto studentDto = new StudentDto();
         Student student = modelMapper.map(person, Student.class);
+        studentDto.setId(student.getId());
         studentDto.setType(student.getType().getName());
         studentDto.setFirstName(student.getFirstName());
         studentDto.setLastName(student.getLastName());

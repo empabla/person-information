@@ -39,7 +39,9 @@ public class DictionaryValueController {
     }
 
     @PostMapping("/upload")
-    @ApiOperation(value = "Import dictionary values from a CSV file", response = StatusDto.class)
+    @ApiOperation(value = "Import dictionary values from a CSV file",
+            notes = "Auxiliary endpoint used to prepare data",
+            response = StatusDto.class)
     public ResponseEntity<StatusDto> addDictionaryValuesFromCsvFile(@RequestParam("file") MultipartFile file) {
         dataImportFromCsvService.importDictionaryValuesFromCsvFile(file);
         return ResponseEntity.ok(new StatusDto("Data from file imported successfully."));

@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UpdateEmployeeCommand extends UpdatePersonCommand {
+public class CreateEmployeeCommand extends CreatePersonCommand {
 
     @NotNull(message = "Cannot be null")
     private LocalDate employmentStartDate;
@@ -25,13 +25,13 @@ public class UpdateEmployeeCommand extends UpdatePersonCommand {
     @PositiveOrZero(message = "Cannot be null; must be positive")
     private Double currentSalary;
 
-    public UpdateEmployeeCommand(@Positive() Long id, String type, String firstName, String lastName, String pesel,
+    public CreateEmployeeCommand(String type, String firstName, String lastName, String pesel,
                                  @Positive(message = "Cannot be null; must be positive") Integer height,
-                                 @Positive(message = "Cannot be null; must be positive") Integer weight, @Email String email,
-                                 @PositiveOrZero(message = "Cannot be null; must be positive") Long version,
-                                 @NotNull(message = "Cannot be null") LocalDate employmentStartDate, String currentPosition,
+                                 @Positive(message = "Cannot be null; must be positive") Integer weight,
+                                 @Email String email, @NotNull(message = "Cannot be null")
+                                         LocalDate employmentStartDate, String currentPosition,
                                  @PositiveOrZero(message = "Cannot be null; must be positive") Double currentSalary) {
-        super(id, type, firstName, lastName, pesel, height, weight, email, version);
+        super(type, firstName, lastName, pesel, height, weight, email);
         this.employmentStartDate = employmentStartDate;
         this.currentPosition = currentPosition;
         this.currentSalary = currentSalary;

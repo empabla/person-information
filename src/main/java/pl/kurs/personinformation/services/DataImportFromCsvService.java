@@ -71,7 +71,7 @@ public class DataImportFromCsvService {
                 }
             } catch (Exception e) {
                 future.completeExceptionally(new DataImportFromFileException("Error during data import. " +
-                        "Invalid file content."));
+                        "Invalid file content. Message: " + e.getMessage()));
             } finally {
                 if (!future.isCompletedExceptionally())
                     importStatus.setCompleted(true);
@@ -115,7 +115,7 @@ public class DataImportFromCsvService {
             lines
                     .skip(1)
                     .map(line -> line.split(","))
-                    .map(args -> new DictionaryValue(args[0], dictionaryService.getById(Long.parseLong(args[1]))))
+                    .map(args -> new DictionaryValue(args[0], dictionaryService.getByName(args[1])))
                     .forEach(dictionaryValueService::add);
         } catch (Exception e) {
             throw new DataImportFromFileException("Error during data import. " + e.getMessage());

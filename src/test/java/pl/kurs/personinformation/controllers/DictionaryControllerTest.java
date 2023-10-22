@@ -9,12 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.repositories.DictionaryRepository;
+import pl.kurs.personinformation.repositories.DictionaryValueRepository;
+import pl.kurs.personinformation.repositories.PersonRepository;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = PersonInformationApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@TestPropertySource(
+        locations = "classpath:application.properties"
+)
 class DictionaryControllerTest {
 
     @Autowired
@@ -31,8 +37,16 @@ class DictionaryControllerTest {
     @Autowired
     private DictionaryRepository dictionaryRepository;
 
+    @Autowired
+    private DictionaryValueRepository dictionaryValueRepository;
+
+    @Autowired
+    private PersonRepository personRepository;
+
     @BeforeEach
     public void setUp() {
+        personRepository.deleteAllInBatch();
+        dictionaryValueRepository.deleteAllInBatch();
         dictionaryRepository.deleteAllInBatch();
     }
 
@@ -75,6 +89,8 @@ class DictionaryControllerTest {
 
     @AfterEach
     public void tearDown() {
+        personRepository.deleteAllInBatch();
+        dictionaryValueRepository.deleteAllInBatch();
         dictionaryRepository.deleteAllInBatch();
     }
 

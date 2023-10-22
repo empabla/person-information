@@ -22,6 +22,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PersonDto {
 
+    private Long id;
+
     private String type;
 
     private String firstName;

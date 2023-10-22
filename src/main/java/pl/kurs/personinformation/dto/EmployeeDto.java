@@ -15,8 +15,8 @@ public class EmployeeDto extends PersonDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate employmentStartDate;
 
-    private String position;
+    private String currentPosition;
 
-    private Double salary;
+    private Double currentSalary;
 
 }

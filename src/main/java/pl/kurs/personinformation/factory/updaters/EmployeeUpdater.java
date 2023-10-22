@@ -41,9 +41,8 @@ public class EmployeeUpdater implements PersonUpdater {
             employeeForUpdate.setEmail(employeeCommand.getEmail());
             employeeForUpdate.setVersion(employeeCommand.getVersion());
             employeeForUpdate.setEmploymentStartDate(employeeCommand.getEmploymentStartDate());
-            dictionaryValueService.validateDictionaryValue(employeeCommand.getPosition());
-            employeeForUpdate.setCurrentPosition(dictionaryValueService.getByName(employeeCommand.getPosition()));
-            employeeForUpdate.setCurrentSalary(employeeCommand.getSalary());
+            employeeForUpdate.setCurrentPosition(dictionaryValueService.getByName(employeeCommand.getCurrentPosition()));
+            employeeForUpdate.setCurrentSalary(employeeCommand.getCurrentSalary());
             return employeeForUpdate;
         } catch (ClassCastException e) {
             throw new WrongTypeException("The type in the request body does not match the entity type");

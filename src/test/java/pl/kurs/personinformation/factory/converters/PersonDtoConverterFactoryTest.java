@@ -44,13 +44,12 @@ class PersonDtoConverterFactoryTest {
     }
 
     @Test
-    @WithMockUser
     public void shouldConvertEmployeeToEmployeeDtoUsingPersonDtoConverterFactory() {
         // given
-        DictionaryValue employeeDV = new DictionaryValue("Employee");
-        DictionaryValue managerDV = new DictionaryValue("Manager");
-        Mockito.when(dictionaryValueService.getByName("Employee")).thenReturn(employeeDV);
-        Mockito.when(dictionaryValueService.getByName("Manager")).thenReturn(managerDV);
+        DictionaryValue employeeDV = new DictionaryValue("employee");
+        DictionaryValue managerDV = new DictionaryValue("manager");
+        Mockito.when(dictionaryValueService.getByName("employee")).thenReturn(employeeDV);
+        Mockito.when(dictionaryValueService.getByName("manager")).thenReturn(managerDV);
         Person expectedEmployee = new Employee(
                 employeeDV, "John", "Doe", "12345678911", 180, 70,
                 "johndoe@test.com", LocalDate.of(2021, 1, 1), managerDV, 40000.00
@@ -59,13 +58,13 @@ class PersonDtoConverterFactoryTest {
         // when
         EmployeeDto employeeDto = (EmployeeDto) dtoConverterFactory.convert(expectedEmployee);
         // then
-        assertEquals("Employee", employeeDto.getType());
+        assertEquals("employee", employeeDto.getType());
         assertEquals("John", employeeDto.getFirstName());
         assertEquals("Doe", employeeDto.getLastName());
         assertEquals("johndoe@test.com", employeeDto.getEmail());
         assertEquals(LocalDate.of(2021, 1, 1), employeeDto.getEmploymentStartDate());
-        assertEquals("Manager", employeeDto.getPosition());
-        assertEquals(40000.00, employeeDto.getSalary());
+        assertEquals("manager", employeeDto.getCurrentPosition());
+        assertEquals(40000.00, employeeDto.getCurrentSalary());
     }
 
 }

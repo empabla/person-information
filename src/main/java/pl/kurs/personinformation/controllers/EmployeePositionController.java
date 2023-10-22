@@ -75,7 +75,7 @@ public class EmployeePositionController {
     public ResponseEntity<StatusDto> deletePositionById(
             @PathVariable Long employeeId,
             @PathVariable("positionId") Long positionId) {
-        employeePositionService.delete(employeeId, positionId);
+        employeePositionService.deleteById(employeeId, positionId);
         return ResponseEntity.ok(new StatusDto(
                 "Position with id " + positionId + " deleted " + "from employee with id " + employeeId));
     }

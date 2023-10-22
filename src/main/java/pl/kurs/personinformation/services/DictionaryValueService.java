@@ -1,6 +1,7 @@
 package pl.kurs.personinformation.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import pl.kurs.personinformation.exceptions.*;
 import pl.kurs.personinformation.models.Dictionary;
@@ -17,13 +18,14 @@ public class DictionaryValueService {
     private final DictionaryValueRepository dictionaryValueRepository;
 
     public boolean existsByName(String name) {
-        return dictionaryValueRepository.existsByName(name);
+        return dictionaryValueRepository.existsByName(name.toLowerCase());
     }
 
     public DictionaryValue add(DictionaryValue dictionaryValue) {
         if (existsByName(dictionaryValue.getName())) {
             throw new DictionaryValueAlreadyExistsException("DictionaryValue '" + dictionaryValue + "' already exists.");
         }
+        dictionaryValue.setName(dictionaryValue.getName().toLowerCase());
         return dictionaryValueRepository.save(
                 Optional.ofNullable(dictionaryValue)
                         .filter(x -> Objects.isNull(x.getId()))
@@ -31,11 +33,13 @@ public class DictionaryValueService {
         );
     }
 
+    @Cacheable("dictionaryValues")
     public DictionaryValue getByName(String name) {
+        validateDictionaryValue(name);
         return dictionaryValueRepository.findByName(
-                Optional.ofNullable(name)
+                Optional.ofNullable(name.toLowerCase())
                         .orElseThrow(() -> new DictionaryValueNotFoundException
-                                ("Dictionary value '" + name + "' not found.")));
+                                ("Invalid value - provided name is empty or null.")));
     }
 
     public DictionaryValue getById(Long id) {
@@ -46,8 +50,8 @@ public class DictionaryValueService {
     }
 
     public void validateDictionaryValue(String name) {
-        if (!dictionaryValueRepository.existsByName(name)) {
-            throw new DictionaryValueNotFoundException("Value '" + name + "' not found.");
+        if (!dictionaryValueRepository.existsByName(name.toLowerCase())) {
+            throw new DictionaryValueNotFoundException("Dictionary value '" + name + "' not found.");
         }
     }
 

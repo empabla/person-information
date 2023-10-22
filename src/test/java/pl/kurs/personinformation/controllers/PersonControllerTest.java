@@ -16,12 +16,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.kurs.personinformation.PersonInformationApplication;
+import pl.kurs.personinformation.commands.CreateEmployeeCommand;
+import pl.kurs.personinformation.commands.CreatePersonCommand;
 import pl.kurs.personinformation.commands.UpdateEmployeeCommand;
 import pl.kurs.personinformation.commands.UpdatePersonCommand;
-import pl.kurs.personinformation.models.Dictionary;
-import pl.kurs.personinformation.models.DictionaryValue;
-import pl.kurs.personinformation.models.Employee;
-import pl.kurs.personinformation.models.Student;
+import pl.kurs.personinformation.models.*;
 import pl.kurs.personinformation.repositories.DictionaryRepository;
 import pl.kurs.personinformation.repositories.DictionaryValueRepository;
 import pl.kurs.personinformation.repositories.PersonRepository;
@@ -129,8 +128,8 @@ class PersonControllerTest {
                             "email": "john.doe@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-01-01",
-                            "position": "manager",
-                            "salary": 40000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 40000.00
                           },
                           {
                             "type": "employee",
@@ -139,8 +138,8 @@ class PersonControllerTest {
                             "email": "adam.wick@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-02-02",
-                            "position": "manager",
-                            "salary": 50000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 50000.00
                           }
                         ]
                         """));
@@ -201,8 +200,8 @@ class PersonControllerTest {
                             "email": "john.doe@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-01-01",
-                            "position": "manager",
-                            "salary": 40000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 40000.00
                           }
                         ]
                         """));
@@ -210,7 +209,7 @@ class PersonControllerTest {
 
     @Test
     @WithMockUser
-    public void shouldGetSinglePersonByLastNameAndWeighRange() throws Exception {
+    public void shouldGetSinglePersonByLastNameAndWeightRange() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
                 new Dictionary("types")
@@ -249,8 +248,8 @@ class PersonControllerTest {
                             "email": "tom.doe@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-01-01",
-                            "position": "manager",
-                            "salary": 50000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 50000.00
                           }
                         ]
                         """));
@@ -325,7 +324,7 @@ class PersonControllerTest {
 
     @Test
     @WithMockUser
-    public void shouldGetSinglePersonByPositionAndEmploymentStartDateRange() throws Exception {
+    public void shouldGetSingleEmployeeByPositionAndEmploymentStartDateRange() throws Exception {
         //given
         Dictionary types = dictionaryRepository.saveAndFlush(
                 new Dictionary("types")
@@ -351,7 +350,7 @@ class PersonControllerTest {
         );
         //when
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/people?position=manager&employmentStartDate=from2021-01-01,to2021-12-31"));
+                .get("/api/people?type=employee&position=manager&employmentStartDate=from2021-01-01,to2021-12-31"));
         //then
         resultActions
                 .andExpect(status().isOk())
@@ -364,8 +363,56 @@ class PersonControllerTest {
                             "email": "john.doe@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-01-01",
-                            "position": "manager",
-                            "salary": 40000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 40000.00
+                          }
+                        ]
+                        """));
+    }
+
+    @Test
+    @WithMockUser
+    public void shouldGetSingleEmployeeByPositionAndFirstName() throws Exception {
+        //given
+        Dictionary types = dictionaryRepository.saveAndFlush(
+                new Dictionary("types")
+        );
+        Dictionary positions = dictionaryRepository.saveAndFlush(
+                new Dictionary("positions")
+        );
+        DictionaryValue employeeDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("employee", types)
+        );
+        DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("manager", positions)
+        );
+        personRepository.saveAndFlush(
+                new Employee(employeeDV, "John", "Doe", "12345678911", 180, 70,
+                        "john.doe@test.com", LocalDate.of(2021, 1, 1), managerDV,
+                        40000.00)
+        );
+        personRepository.saveAndFlush(
+                new Employee(employeeDV, "Tom", "Doe", "12345678912", 170, 60,
+                        "tom.doe@test.com", LocalDate.of(2022, 1, 1), managerDV,
+                        50000.00)
+        );
+        //when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/people?type=employee&firstName=Tom&position=manager"));
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        [
+                         {
+                            "type": "employee",
+                            "firstName": "Tom",
+                            "lastName": "Doe",
+                            "email": "tom.doe@test.com",
+                            "version": 0,
+                            "employmentStartDate": "2022-01-01",
+                            "currentPosition": "manager",
+                            "currentSalary": 50000.00
                           }
                         ]
                         """));
@@ -416,8 +463,8 @@ class PersonControllerTest {
                 .andExpect(jsonPath("$.email", is("john.doe@test.com")))
                 .andExpect(jsonPath("$.version", is(1)))
                 .andExpect(jsonPath("$.employmentStartDate", is("2021-01-01")))
-                .andExpect(jsonPath("$.position", is("director")))
-                .andExpect(jsonPath("$.salary", is(60000.00)));
+                .andExpect(jsonPath("$.currentPosition", is("director")))
+                .andExpect(jsonPath("$.currentSalary", is(60000.00)));
     }
 
     @Test
@@ -683,8 +730,89 @@ class PersonControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.timestamp", is(notNullValue())))
                 .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.errorMessages",
-                        hasItem("Error during data import. Invalid file content.")));
+                .andExpect(content().string(containsString("Error during data import. Invalid file content")));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    public void shouldAddEmployee() throws Exception {
+        //given
+        Dictionary types = dictionaryRepository.saveAndFlush(
+                new Dictionary("types")
+        );
+        Dictionary positions = dictionaryRepository.saveAndFlush(
+                new Dictionary("positions")
+        );
+        DictionaryValue employeeDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("employee", types)
+        );
+        DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("manager", positions)
+        );
+        CreatePersonCommand createEmployeeCommandForTest = new CreateEmployeeCommand(
+                employeeDV.getName(), "John", "Doe", "12345678910", 180, 70,
+                "john.doe@test.com", LocalDate.of(2021, 1, 1),
+                managerDV.getName(), 40000.00
+        );
+        String jsonForTest = objectMapper.writeValueAsString(createEmployeeCommandForTest);
+        //when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/people")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonForTest))
+                .andExpect(status().isOk())
+                .andReturn();
+        String responseContent = result.getResponse().getContentAsString();
+        Employee employee = objectMapper.readValue(responseContent, Employee.class);
+        Long employeeId = employee.getId();
+        //then
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/people/" + employeeId))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        {
+                          "type": "employee",
+                          "firstName": "John",
+                          "lastName": "Doe",
+                          "email": "john.doe@test.com",
+                          "version": 0,
+                          "employmentStartDate": "2021-01-01",
+                          "currentPosition": "manager",
+                          "currentSalary": 40000.00
+                        },
+                        """));
+    }
+
+    @Test
+    @WithMockUser
+    public void shouldDeletePersonById() throws Exception {
+        //given
+        Dictionary types = dictionaryRepository.saveAndFlush(
+                new Dictionary("types")
+        );
+        Dictionary positions = dictionaryRepository.saveAndFlush(
+                new Dictionary("positions")
+        );
+        DictionaryValue employeeDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("employee", types)
+        );
+        DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("manager", positions)
+        );
+        Employee employee = personRepository.saveAndFlush(
+                new Employee(employeeDV, "John", "Doe",
+                        "12345678911", 180, 70, "john.doe@test.com",
+                        LocalDate.of(2021, 1, 1), managerDV, 40000.00)
+        );
+        Long personId = employee.getId();
+        //when
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/api/people/" + personId));
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status")
+                        .value("Person with id " + personId + " deleted"));
     }
 
     @AfterEach

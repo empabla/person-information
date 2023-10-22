@@ -23,6 +23,7 @@ public class RetireeDtoConverter implements PersonDtoConverter {
     public PersonDto convert(Person person) {
         RetireeDto retireeDto = new RetireeDto();
         Retiree retiree = modelMapper.map(person, Retiree.class);
+        retireeDto.setId(retiree.getId());
         retireeDto.setType(retiree.getType().getName());
         retireeDto.setFirstName(retiree.getFirstName());
         retireeDto.setLastName(retiree.getLastName());
