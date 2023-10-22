@@ -64,8 +64,8 @@ class PersonDtoConverterFactoryTest {
         assertEquals("Doe", employeeDto.getLastName());
         assertEquals("johndoe@test.com", employeeDto.getEmail());
         assertEquals(LocalDate.of(2021, 1, 1), employeeDto.getEmploymentStartDate());
-        assertEquals("Manager", employeeDto.getPosition());
-        assertEquals(40000.00, employeeDto.getSalary());
+        assertEquals("Manager", employeeDto.getCurrentPosition());
+        assertEquals(40000.00, employeeDto.getCurrentSalary());
     }
 
 }

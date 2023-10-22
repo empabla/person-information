@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.kurs.personinformation.PersonInformationApplication;
+import pl.kurs.personinformation.commands.CreateEmployeeCommand;
+import pl.kurs.personinformation.commands.CreatePersonCommand;
 import pl.kurs.personinformation.commands.UpdateEmployeeCommand;
 import pl.kurs.personinformation.commands.UpdatePersonCommand;
 import pl.kurs.personinformation.models.Dictionary;
@@ -129,8 +131,8 @@ class PersonControllerTest {
                             "email": "john.doe@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-01-01",
-                            "position": "manager",
-                            "salary": 40000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 40000.00
                           },
                           {
                             "type": "employee",
@@ -139,8 +141,8 @@ class PersonControllerTest {
                             "email": "adam.wick@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-02-02",
-                            "position": "manager",
-                            "salary": 50000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 50000.00
                           }
                         ]
                         """));
@@ -201,8 +203,8 @@ class PersonControllerTest {
                             "email": "john.doe@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-01-01",
-                            "position": "manager",
-                            "salary": 40000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 40000.00
                           }
                         ]
                         """));
@@ -249,8 +251,8 @@ class PersonControllerTest {
                             "email": "tom.doe@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-01-01",
-                            "position": "manager",
-                            "salary": 50000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 50000.00
                           }
                         ]
                         """));
@@ -364,8 +366,8 @@ class PersonControllerTest {
                             "email": "john.doe@test.com",
                             "version": 0,
                             "employmentStartDate": "2021-01-01",
-                            "position": "manager",
-                            "salary": 40000.00
+                            "currentPosition": "manager",
+                            "currentSalary": 40000.00
                           }
                         ]
                         """));
@@ -416,8 +418,8 @@ class PersonControllerTest {
                 .andExpect(jsonPath("$.email", is("john.doe@test.com")))
                 .andExpect(jsonPath("$.version", is(1)))
                 .andExpect(jsonPath("$.employmentStartDate", is("2021-01-01")))
-                .andExpect(jsonPath("$.position", is("director")))
-                .andExpect(jsonPath("$.salary", is(60000.00)));
+                .andExpect(jsonPath("$.currentPosition", is("director")))
+                .andExpect(jsonPath("$.currentSalary", is(60000.00)));
     }
 
     @Test
@@ -684,6 +686,56 @@ class PersonControllerTest {
                 .andExpect(jsonPath("$.timestamp", is(notNullValue())))
                 .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"))
                 .andExpect(content().string(containsString("Error during data import. Invalid file content")));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    public void shouldAddEmployee() throws Exception {
+        //given
+        Dictionary types = dictionaryRepository.saveAndFlush(
+                new Dictionary("types")
+        );
+        Dictionary positions = dictionaryRepository.saveAndFlush(
+                new Dictionary("positions")
+        );
+        DictionaryValue employeeDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("employee", types)
+        );
+        DictionaryValue managerDV = dictionaryValueRepository.saveAndFlush(
+                new DictionaryValue("manager", positions)
+        );
+        CreatePersonCommand createEmployeeCommandForTest = new CreateEmployeeCommand(
+                employeeDV.getName(), "John", "Doe", "12345678910", 180, 70,
+                "john.doe@test.com", LocalDate.of(2021, 1, 1),
+                managerDV.getName(), 40000.00
+        );
+        String jsonForTest = objectMapper.writeValueAsString(createEmployeeCommandForTest);
+        //when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/people")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonForTest))
+                .andExpect(status().isOk())
+                .andReturn();
+        String responseContent = result.getResponse().getContentAsString();
+        Employee employee = objectMapper.readValue(responseContent, Employee.class);
+        Long employeeId = employee.getId();
+        //then
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/people/" + employeeId))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        {
+                          "type": "employee",
+                          "firstName": "John",
+                          "lastName": "Doe",
+                          "email": "john.doe@test.com",
+                          "version": 0,
+                          "employmentStartDate": "2021-01-01",
+                          "currentPosition": "manager",
+                          "currentSalary": 40000.00
+                        },
+                        """));
     }
 
     @AfterEach

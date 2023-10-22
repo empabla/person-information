@@ -1,7 +1,6 @@
 package pl.kurs.personinformation.exceptions.handling;
 
 import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,7 +13,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-@Profile("!test")
 public class ConstraintExceptionHandler {
 
     private Map<String, ConstraintErrorHandler> constraintErrorMapper;

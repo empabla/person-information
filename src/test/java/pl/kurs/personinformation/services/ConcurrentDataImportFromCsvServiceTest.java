@@ -13,6 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.kurs.personinformation.PersonInformationApplication;
+import pl.kurs.personinformation.models.Dictionary;
+import pl.kurs.personinformation.models.DictionaryValue;
+import pl.kurs.personinformation.repositories.DictionaryRepository;
+import pl.kurs.personinformation.repositories.DictionaryValueRepository;
 import pl.kurs.personinformation.repositories.PersonRepository;
 
 import static org.hamcrest.Matchers.*;
@@ -28,19 +32,31 @@ class ConcurrentDataImportFromCsvServiceTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private DictionaryRepository dictionaryRepository;
+
+    @Autowired
+    private DictionaryValueRepository dictionaryValueRepository;
+
+    @Autowired
     private PersonRepository personRepository;
 
     @BeforeEach
     public void setUp() {
         personRepository.deleteAllInBatch();
+        dictionaryValueRepository.deleteAllInBatch();
+        dictionaryRepository.deleteAllInBatch();
     }
 
     @Test
     @WithMockUser(username = "importer", roles = "IMPORTER")
     public void shouldPreventAnotherImportWhileFirstOneIsInProgress() throws Exception {
         //given
+        Dictionary types = dictionaryRepository.saveAndFlush(new Dictionary("types"));
+        Dictionary positions = dictionaryRepository.saveAndFlush(new Dictionary("positions"));
+        dictionaryValueRepository.saveAndFlush(new DictionaryValue("employee", types));
+        dictionaryValueRepository.saveAndFlush(new DictionaryValue("manager", positions));
         String fileContent = "type,first_name,last_name,pesel,height,weight,email,param1,param2,param3,param4" +
-                "\nEmployee,John,Doe,12345678911,180,70,johndoe@test.com,2021-01-01,Manager,40000";
+                "\nemployee,John,Doe,12345678911,180,70,johndoe@test.com,2021-01-01,manager,40000";
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test-peopleToImport.csv", "text/csv", fileContent.getBytes()
         );
@@ -72,6 +88,8 @@ class ConcurrentDataImportFromCsvServiceTest {
     @AfterEach
     public void tearDown() {
         personRepository.deleteAllInBatch();
+        dictionaryValueRepository.deleteAllInBatch();
+        dictionaryRepository.deleteAllInBatch();
     }
 
 }

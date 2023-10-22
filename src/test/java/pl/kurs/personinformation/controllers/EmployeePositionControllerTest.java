@@ -286,7 +286,7 @@ class EmployeePositionControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.timestamp", is(notNullValue())))
                 .andExpect(jsonPath("$.errorCode").value("NOT_FOUND"))
-                .andExpect(jsonPath("$.errorMessages", hasItem("Value 'director' not found.")));
+                .andExpect(jsonPath("$.errorMessages", hasItem("Dictionary value 'director' not found.")));
     }
 
     @Test
