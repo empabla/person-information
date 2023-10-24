@@ -25,7 +25,6 @@ public class DictionaryValue {
     public DictionaryValue(String name, Dictionary dictionary) {
         this.name = name;
         this.dictionary = dictionary;
-        this.setDictionary(dictionary);
     }
 
     public DictionaryValue(String name) {

@@ -7,7 +7,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.commands.UpdateEmployeeCommand;
@@ -56,7 +55,8 @@ class PersonUpdaterFactoryTest {
                 "director", 100000.00
         );
         when(personRepository.findById(1L)).thenReturn(Optional.of(new Employee()));
-        Mockito.doReturn(new DictionaryValue("director")).when(dictionaryValueService).getByName("director");
+        Mockito.doReturn(new DictionaryValue("director"))
+                .when(dictionaryValueService).getByNameFromDictionary("director", "positions");
         //when
         Employee employee = (Employee) updaterFactory.update(updateCommand);
         //then

@@ -116,7 +116,7 @@ public class DataImportFromCsvService {
                     .skip(1)
                     .map(line -> line.split(","))
                     .map(args -> new DictionaryValue(args[0], dictionaryService.getByName(args[1])))
-                    .forEach(dictionaryValueService::add);
+                    .forEach(x -> dictionaryValueService.addToDictionary(x, x.getDictionary().getName()));
         } catch (Exception e) {
             throw new DataImportFromFileException("Error during data import. " + e.getMessage());
         }

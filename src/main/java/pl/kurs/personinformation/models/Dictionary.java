@@ -21,6 +21,7 @@ public class Dictionary {
     @Column(name = "id_dictionary")
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "dictionary")

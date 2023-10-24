@@ -32,9 +32,13 @@ public class StudentDtoConverter implements PersonDtoConverter {
         studentDto.setLastName(student.getLastName());
         studentDto.setEmail(student.getEmail());
         studentDto.setVersion(student.getVersion());
-        studentDto.setUniversityName(dictionaryValueService.getByName(student.getUniversityName().getName()).toString());
+        studentDto.setUniversityName(dictionaryValueService.getByNameFromDictionary(
+                student.getUniversityName().getName(), "university names"
+        ).toString());
         studentDto.setEnrollmentYear(student.getEnrollmentYear());
-        studentDto.setFieldOfStudy(dictionaryValueService.getByName(student.getFieldOfStudy().getName()).toString());
+        studentDto.setFieldOfStudy(dictionaryValueService.getByNameFromDictionary(
+                student.getFieldOfStudy().getName(), "fields of study"
+        ).toString());
         studentDto.setScholarship(student.getScholarship());
         return studentDto;
     }

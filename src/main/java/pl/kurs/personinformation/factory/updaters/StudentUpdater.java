@@ -40,9 +40,11 @@ public class StudentUpdater implements PersonUpdater {
             studentForUpdate.setWeight(studentCommand.getWeight());
             studentForUpdate.setEmail(studentCommand.getEmail());
             studentForUpdate.setVersion(studentCommand.getVersion());
-            studentForUpdate.setUniversityName(dictionaryValueService.getByName(studentCommand.getUniversityName()));
+            studentForUpdate.setUniversityName(dictionaryValueService
+                    .getByNameFromDictionary(studentCommand.getUniversityName(), "university names"));
             studentForUpdate.setEnrollmentYear(studentCommand.getEnrollmentYear());
-            studentForUpdate.setFieldOfStudy(dictionaryValueService.getByName(studentCommand.getFieldOfStudy()));
+            studentForUpdate.setFieldOfStudy(dictionaryValueService
+                    .getByNameFromDictionary(studentCommand.getFieldOfStudy(), "fields of study"));
             studentForUpdate.setScholarship(studentCommand.getScholarship());
             return studentForUpdate;
         } catch (ClassCastException e) {

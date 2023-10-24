@@ -41,7 +41,8 @@ public class EmployeeUpdater implements PersonUpdater {
             employeeForUpdate.setEmail(employeeCommand.getEmail());
             employeeForUpdate.setVersion(employeeCommand.getVersion());
             employeeForUpdate.setEmploymentStartDate(employeeCommand.getEmploymentStartDate());
-            employeeForUpdate.setCurrentPosition(dictionaryValueService.getByName(employeeCommand.getCurrentPosition()));
+            employeeForUpdate.setCurrentPosition(dictionaryValueService
+                    .getByNameFromDictionary(employeeCommand.getCurrentPosition(), "positions"));
             employeeForUpdate.setCurrentSalary(employeeCommand.getCurrentSalary());
             return employeeForUpdate;
         } catch (ClassCastException e) {

@@ -31,20 +31,23 @@ public class EmployeePositionService {
     @Transactional
     public EmployeePosition addPositionToEmployee(Long employeeId, CreateEmployeePositionCommand command) {
         Employee employee = employeeService.getById(employeeId);
-        dictionaryValueService.validateDictionaryValue(command.getPosition());
-        DictionaryValue newPosition = dictionaryValueService.getByName(command.getPosition());
+        DictionaryValue newPosition = dictionaryValueService.getByNameFromDictionary(
+                command.getPosition(), "positions"
+        );
         List<EmployeePosition> existingPositions = employeePositionRepository.findByEmployee(employeeId);
         boolean allPositionsHaveEndDate = existingPositions.stream()
                 .allMatch(existingPosition -> existingPosition.getEndDate() != null);
         if (!allPositionsHaveEndDate)
             throw new WrongEmploymentDateException(
                     "Not all existing employee's positions have an end date. " +
-                            "To add new position all previous must be over.");
+                            "To add new position all previous must be over."
+            );
         boolean isStartDateValid = command.getStartDate().isAfter(employee.getEmploymentStartDate());
         if (!isStartDateValid)
             throw new WrongEmploymentDateException(
                     "Start date of the new position cannot be before employee's " + "employment start date: "
-                            + employee.getEmploymentStartDate());
+                            + employee.getEmploymentStartDate()
+            );
         boolean isOverlap = existingPositions.stream()
                 .anyMatch(existingPosition -> !command.getStartDate().isAfter(existingPosition.getEndDate()));
         if (isOverlap)
@@ -76,7 +79,8 @@ public class EmployeePositionService {
         EmployeePosition currentPosition = getById(positionId);
         if (!currentPosition.getEmployee().getId().equals(employeeId)) {
             throw new PositionNotBelongToEmployeeException(
-                    "Position with id " + positionId + " does not belong " + "to the employee with id " + employeeId);
+                    "Position with id " + positionId + " does not belong " + "to the employee with id " + employeeId
+            );
         }
         return currentPosition;
     }
@@ -85,7 +89,8 @@ public class EmployeePositionService {
         EmployeePosition positionToDelete = getById(positionId);
         if (!positionToDelete.getEmployee().getId().equals(employeeId)) {
             throw new PositionNotBelongToEmployeeException(
-                    "Position with id " + positionId + " does not belong " + "to the employee with id " + employeeId);
+                    "Position with id " + positionId + " does not belong " + "to the employee with id " + employeeId
+            );
         }
         employeePositionRepository.delete(positionToDelete);
     }

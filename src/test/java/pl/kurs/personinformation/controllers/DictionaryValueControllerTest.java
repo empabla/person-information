@@ -156,7 +156,8 @@ class DictionaryValueControllerTest {
                 .andExpect(jsonPath("$.timestamp", is(notNullValue())))
                 .andExpect(jsonPath("$.errorCode").value("BAD_REQUEST"))
                 .andExpect(jsonPath("$.errorMessages",
-                        hasItem("DictionaryValue 'employee' already exists.")));
+                        hasItem("DictionaryValue 'employee' already exists in '"
+                                + typesDictionary.getName() + "' dictionary.")));
     }
 
     @Test

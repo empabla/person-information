@@ -52,7 +52,8 @@ public class PersonFactoryTest {
                 "johndoe@test.com", LocalDate.of(2021, 1, 1),
                 "director", 100000.00
         );
-        Mockito.doReturn(new DictionaryValue("director")).when(dictionaryValueService).getByName("director");
+        Mockito.doReturn(new DictionaryValue("director"))
+                .when(dictionaryValueService).getByNameFromDictionary("director", "positions");
         //when
         Employee employee = (Employee) personFactory.create(createCommand);
         //then

@@ -26,7 +26,7 @@ public class RetireeCreator implements PersonCreator {
     public Person createPerson(CreatePersonCommand createPersonCommand) {
         CreateRetireeCommand retireeCommand = modelMapper.map(createPersonCommand, CreateRetireeCommand.class);
         return new Retiree(
-                dictionaryValueService.getByName(this.getType()),
+                dictionaryValueService.getByNameFromDictionary(this.getType(), "types"),
                 retireeCommand.getFirstName(),
                 retireeCommand.getLastName(),
                 retireeCommand.getPesel(),
