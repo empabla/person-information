@@ -9,13 +9,13 @@ import pl.kurs.personinformation.commands.UpdateRetireeCommand;
 import pl.kurs.personinformation.exceptions.WrongTypeException;
 import pl.kurs.personinformation.models.Person;
 import pl.kurs.personinformation.models.Retiree;
-import pl.kurs.personinformation.repositories.PersonRepository;
+import pl.kurs.personinformation.repositories.RetireeRepository;
 
 @Service
 @RequiredArgsConstructor
 public class RetireeUpdater implements PersonUpdater {
 
-    private final PersonRepository personRepository;
+    private final RetireeRepository retireeRepository;
 
     private final ModelMapper modelMapper;
 
@@ -28,7 +28,7 @@ public class RetireeUpdater implements PersonUpdater {
     public Person updatePerson(UpdatePersonCommand updatePersonCommand) {
         try {
             UpdateRetireeCommand retireeCommand = modelMapper.map(updatePersonCommand, UpdateRetireeCommand.class);
-            Retiree retireeForUpdate = (Retiree) personRepository.findById(retireeCommand.getId())
+            Retiree retireeForUpdate = retireeRepository.findById(retireeCommand.getId())
                     .orElseThrow(() -> new EntityNotFoundException("No entity found"));
             retireeForUpdate.setFirstName(retireeCommand.getFirstName());
             retireeForUpdate.setLastName(retireeCommand.getLastName());
