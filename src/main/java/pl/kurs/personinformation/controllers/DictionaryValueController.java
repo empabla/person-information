@@ -51,8 +51,8 @@ public class DictionaryValueController {
     @Transactional
     @ApiOperation(value = "Create a new person type", response = DictionaryValueDto.class)
     public ResponseEntity<DictionaryValueDto> createNewPersonType(@PathVariable @LettersOnly @Valid String typeName) {
-        DictionaryValue dictionaryValueForSave = new DictionaryValue(typeName, dictionaryService.getByName("types"));
-        dictionaryValueService.add(dictionaryValueForSave);
+        DictionaryValue dictionaryValueForSave = new DictionaryValue(typeName);
+        dictionaryValueService.addToDictionary(dictionaryValueForSave, "types");
         DictionaryValueDto dictionaryValueDto = modelMapper.map(dictionaryValueForSave, DictionaryValueDto.class);
         return ResponseEntity.ok(dictionaryValueDto);
     }
@@ -62,8 +62,10 @@ public class DictionaryValueController {
     @ApiOperation(value = "Add a dictionary value to a specific dictionary", response = DictionaryValueDto.class)
     public ResponseEntity<DictionaryValueDto> addDictionaryValue(@PathVariable @LettersOnly @Valid String dictionaryName,
                                                                  @PathVariable @LettersOnly @Valid String dictionaryValue) {
-        DictionaryValue dictionaryValueForSave = new DictionaryValue(dictionaryValue, dictionaryService.getByName(dictionaryName));
-        dictionaryValueService.add(dictionaryValueForSave);
+        DictionaryValue dictionaryValueForSave = new DictionaryValue(
+                dictionaryValue, dictionaryService.getByName(dictionaryName)
+        );
+        dictionaryValueService.addToDictionary(dictionaryValueForSave, dictionaryName);
         DictionaryValueDto dictionaryValueDto = modelMapper.map(dictionaryValueForSave, DictionaryValueDto.class);
         return ResponseEntity.ok(dictionaryValueDto);
     }

@@ -26,7 +26,7 @@ public class EmployeeCreator implements PersonCreator {
     public Person createPerson(CreatePersonCommand createPersonCommand) {
         CreateEmployeeCommand employeeCommand = modelMapper.map(createPersonCommand, CreateEmployeeCommand.class);
         return new Employee(
-                dictionaryValueService.getByName(this.getType()),
+                dictionaryValueService.getByNameFromDictionary(this.getType(), "types"),
                 employeeCommand.getFirstName(),
                 employeeCommand.getLastName(),
                 employeeCommand.getPesel(),
@@ -34,7 +34,9 @@ public class EmployeeCreator implements PersonCreator {
                 employeeCommand.getWeight(),
                 employeeCommand.getEmail(),
                 employeeCommand.getEmploymentStartDate(),
-                dictionaryValueService.getByName(employeeCommand.getCurrentPosition().toLowerCase()),
+                dictionaryValueService.getByNameFromDictionary(
+                        employeeCommand.getCurrentPosition().toLowerCase(), "positions"
+                ),
                 employeeCommand.getCurrentSalary()
         );
     }

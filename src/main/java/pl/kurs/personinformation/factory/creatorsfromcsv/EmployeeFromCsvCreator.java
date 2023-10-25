@@ -22,7 +22,7 @@ public class EmployeeFromCsvCreator implements PersonFromCsvCreator {
     @Override
     public Person createPerson(String[] parameters) {
         return new Employee(
-                dictionaryValueService.getByName(parameters[0].trim()),
+                dictionaryValueService.getByNameFromDictionary(parameters[0].trim(), "types"),
                 parameters[1].trim(),
                 parameters[2].trim(),
                 parameters[3].trim(),
@@ -30,7 +30,7 @@ public class EmployeeFromCsvCreator implements PersonFromCsvCreator {
                 Integer.parseInt(parameters[5].trim()),
                 parameters[6].trim(),
                 LocalDate.parse(parameters[7].trim()),
-                dictionaryValueService.getByName(parameters[8].trim()),
+                dictionaryValueService.getByNameFromDictionary(parameters[8].trim(), "positions"),
                 Double.parseDouble(parameters[9].trim())
         );
     }

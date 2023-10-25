@@ -33,7 +33,9 @@ public class EmployeeDtoConverter implements PersonDtoConverter {
         employeeDto.setEmail(employee.getEmail());
         employeeDto.setVersion(employee.getVersion());
         employeeDto.setEmploymentStartDate(employee.getEmploymentStartDate());
-        employeeDto.setCurrentPosition(dictionaryValueService.getByName(employee.getCurrentPosition().getName()).toString());
+        employeeDto.setCurrentPosition(dictionaryValueService.getByNameFromDictionary(
+                employee.getCurrentPosition().getName(), "positions"
+        ).toString());
         employeeDto.setCurrentSalary(employee.getCurrentSalary());
         return employeeDto;
     }

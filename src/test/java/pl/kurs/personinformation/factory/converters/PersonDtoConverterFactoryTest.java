@@ -7,7 +7,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.dto.EmployeeDto;
@@ -48,8 +47,10 @@ class PersonDtoConverterFactoryTest {
         // given
         DictionaryValue employeeDV = new DictionaryValue("employee");
         DictionaryValue managerDV = new DictionaryValue("manager");
-        Mockito.when(dictionaryValueService.getByName("employee")).thenReturn(employeeDV);
-        Mockito.when(dictionaryValueService.getByName("manager")).thenReturn(managerDV);
+        Mockito.when(dictionaryValueService.getByNameFromDictionary("employee", "positions"))
+                .thenReturn(employeeDV);
+        Mockito.when(dictionaryValueService.getByNameFromDictionary("manager", "positions"))
+                .thenReturn(managerDV);
         Person expectedEmployee = new Employee(
                 employeeDV, "John", "Doe", "12345678911", 180, 70,
                 "johndoe@test.com", LocalDate.of(2021, 1, 1), managerDV, 40000.00

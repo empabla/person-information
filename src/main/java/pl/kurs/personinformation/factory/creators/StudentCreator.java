@@ -26,16 +26,20 @@ public class StudentCreator implements PersonCreator {
     public Person createPerson(CreatePersonCommand createPersonCommand) {
         CreateStudentCommand studentCommand = modelMapper.map(createPersonCommand, CreateStudentCommand.class);
         return new Student(
-                dictionaryValueService.getByName(this.getType()),
+                dictionaryValueService.getByNameFromDictionary(this.getType(), "types"),
                 studentCommand.getFirstName(),
                 studentCommand.getLastName(),
                 studentCommand.getPesel(),
                 studentCommand.getHeight(),
                 studentCommand.getWeight(),
                 studentCommand.getEmail(),
-                dictionaryValueService.getByName(studentCommand.getUniversityName().toLowerCase()),
+                dictionaryValueService.getByNameFromDictionary(
+                        studentCommand.getUniversityName().toLowerCase(), "university names"
+                ),
                 studentCommand.getEnrollmentYear(),
-                dictionaryValueService.getByName(studentCommand.getFieldOfStudy().toLowerCase()),
+                dictionaryValueService.getByNameFromDictionary(
+                        studentCommand.getFieldOfStudy().toLowerCase(), "fields of study"
+                ),
                 studentCommand.getScholarship()
         );
     }

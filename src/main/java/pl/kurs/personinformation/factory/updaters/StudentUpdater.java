@@ -9,7 +9,7 @@ import pl.kurs.personinformation.commands.UpdateStudentCommand;
 import pl.kurs.personinformation.exceptions.WrongTypeException;
 import pl.kurs.personinformation.models.Person;
 import pl.kurs.personinformation.models.Student;
-import pl.kurs.personinformation.repositories.PersonRepository;
+import pl.kurs.personinformation.repositories.StudentRepository;
 import pl.kurs.personinformation.services.DictionaryValueService;
 
 @Service
@@ -18,7 +18,7 @@ public class StudentUpdater implements PersonUpdater {
 
     private final DictionaryValueService dictionaryValueService;
 
-    private final PersonRepository personRepository;
+    private final StudentRepository studentRepository;
 
     private final ModelMapper modelMapper;
 
@@ -31,7 +31,7 @@ public class StudentUpdater implements PersonUpdater {
     public Person updatePerson(UpdatePersonCommand updatePersonCommand) {
         try {
             UpdateStudentCommand studentCommand = modelMapper.map(updatePersonCommand, UpdateStudentCommand.class);
-            Student studentForUpdate = (Student) personRepository.findById(studentCommand.getId())
+            Student studentForUpdate = studentRepository.findById(studentCommand.getId())
                     .orElseThrow(() -> new EntityNotFoundException("No entity found"));
             studentForUpdate.setFirstName(studentCommand.getFirstName());
             studentForUpdate.setLastName(studentCommand.getLastName());
@@ -40,9 +40,11 @@ public class StudentUpdater implements PersonUpdater {
             studentForUpdate.setWeight(studentCommand.getWeight());
             studentForUpdate.setEmail(studentCommand.getEmail());
             studentForUpdate.setVersion(studentCommand.getVersion());
-            studentForUpdate.setUniversityName(dictionaryValueService.getByName(studentCommand.getUniversityName()));
+            studentForUpdate.setUniversityName(dictionaryValueService
+                    .getByNameFromDictionary(studentCommand.getUniversityName(), "university names"));
             studentForUpdate.setEnrollmentYear(studentCommand.getEnrollmentYear());
-            studentForUpdate.setFieldOfStudy(dictionaryValueService.getByName(studentCommand.getFieldOfStudy()));
+            studentForUpdate.setFieldOfStudy(dictionaryValueService
+                    .getByNameFromDictionary(studentCommand.getFieldOfStudy(), "fields of study"));
             studentForUpdate.setScholarship(studentCommand.getScholarship());
             return studentForUpdate;
         } catch (ClassCastException e) {

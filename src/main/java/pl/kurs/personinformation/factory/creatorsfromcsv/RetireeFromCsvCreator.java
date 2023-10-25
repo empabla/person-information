@@ -20,7 +20,7 @@ public class RetireeFromCsvCreator implements PersonFromCsvCreator {
     @Override
     public Person createPerson(String[] parameters) {
         return new Retiree(
-                dictionaryValueService.getByName(parameters[0].trim()),
+                dictionaryValueService.getByNameFromDictionary(parameters[0].trim(), "types"),
                 parameters[1].trim(),
                 parameters[2].trim(),
                 parameters[3].trim(),

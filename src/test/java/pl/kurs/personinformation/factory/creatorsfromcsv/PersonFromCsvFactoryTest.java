@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.commands.CreatePersonFromCsvCommand;
@@ -45,7 +44,8 @@ class PersonFromCsvFactoryTest {
                 "employee", "Mia", "Smith", "78062890123", "167", "63", "miasmith@test.com", "2020-12-01",
                 "manager", "95000"
         };
-        Mockito.doReturn(new DictionaryValue("manager")).when(dictionaryValueService).getByName("manager");
+        Mockito.doReturn(new DictionaryValue("manager"))
+                .when(dictionaryValueService).getByNameFromDictionary("manager", "positions");
         CreatePersonFromCsvCommand command = new CreatePersonFromCsvCommand("employee", employeeData);
         //when
         Employee employee = (Employee) personFromCsvFactory.create(command);

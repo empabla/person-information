@@ -9,7 +9,7 @@ import pl.kurs.personinformation.commands.UpdatePersonCommand;
 import pl.kurs.personinformation.exceptions.WrongTypeException;
 import pl.kurs.personinformation.models.Employee;
 import pl.kurs.personinformation.models.Person;
-import pl.kurs.personinformation.repositories.PersonRepository;
+import pl.kurs.personinformation.repositories.EmployeeRepository;
 import pl.kurs.personinformation.services.DictionaryValueService;
 
 @Service
@@ -18,7 +18,7 @@ public class EmployeeUpdater implements PersonUpdater {
 
     private final DictionaryValueService dictionaryValueService;
 
-    private final PersonRepository personRepository;
+    private final EmployeeRepository employeeRepository;
 
     private final ModelMapper modelMapper;
 
@@ -31,7 +31,7 @@ public class EmployeeUpdater implements PersonUpdater {
     public Person updatePerson(UpdatePersonCommand updatePersonCommand) {
         try {
             UpdateEmployeeCommand employeeCommand = modelMapper.map(updatePersonCommand, UpdateEmployeeCommand.class);
-            Employee employeeForUpdate = (Employee) personRepository.findById(employeeCommand.getId())
+            Employee employeeForUpdate = employeeRepository.findById(employeeCommand.getId())
                     .orElseThrow(() -> new EntityNotFoundException("No entity found"));
             employeeForUpdate.setFirstName(employeeCommand.getFirstName());
             employeeForUpdate.setLastName(employeeCommand.getLastName());
@@ -41,7 +41,8 @@ public class EmployeeUpdater implements PersonUpdater {
             employeeForUpdate.setEmail(employeeCommand.getEmail());
             employeeForUpdate.setVersion(employeeCommand.getVersion());
             employeeForUpdate.setEmploymentStartDate(employeeCommand.getEmploymentStartDate());
-            employeeForUpdate.setCurrentPosition(dictionaryValueService.getByName(employeeCommand.getCurrentPosition()));
+            employeeForUpdate.setCurrentPosition(dictionaryValueService
+                    .getByNameFromDictionary(employeeCommand.getCurrentPosition(), "positions"));
             employeeForUpdate.setCurrentSalary(employeeCommand.getCurrentSalary());
             return employeeForUpdate;
         } catch (ClassCastException e) {

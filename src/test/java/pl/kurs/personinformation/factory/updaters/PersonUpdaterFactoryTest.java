@@ -7,14 +7,15 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import pl.kurs.personinformation.PersonInformationApplication;
 import pl.kurs.personinformation.commands.UpdateEmployeeCommand;
 import pl.kurs.personinformation.commands.UpdatePersonCommand;
 import pl.kurs.personinformation.models.DictionaryValue;
 import pl.kurs.personinformation.models.Employee;
-import pl.kurs.personinformation.repositories.PersonRepository;
+import pl.kurs.personinformation.repositories.EmployeeRepository;
+import pl.kurs.personinformation.repositories.RetireeRepository;
+import pl.kurs.personinformation.repositories.StudentRepository;
 import pl.kurs.personinformation.services.DictionaryValueService;
 
 import java.time.LocalDate;
@@ -33,7 +34,13 @@ class PersonUpdaterFactoryTest {
     private DictionaryValueService dictionaryValueService;
 
     @Mock
-    private PersonRepository personRepository;
+    private StudentRepository studentRepository;
+
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
+    private RetireeRepository retireeRepository;
 
     private PersonUpdaterFactory updaterFactory;
 
@@ -41,9 +48,9 @@ class PersonUpdaterFactoryTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         updaterFactory = new PersonUpdaterFactory(Set.of(
-                new EmployeeUpdater(dictionaryValueService, personRepository, new ModelMapper()),
-                new StudentUpdater(dictionaryValueService, personRepository, new ModelMapper()),
-                new RetireeUpdater(personRepository, new ModelMapper())
+                new EmployeeUpdater(dictionaryValueService, employeeRepository, new ModelMapper()),
+                new StudentUpdater(dictionaryValueService, studentRepository, new ModelMapper()),
+                new RetireeUpdater(retireeRepository, new ModelMapper())
         ));
     }
 
@@ -55,8 +62,9 @@ class PersonUpdaterFactoryTest {
                 "johndoe@test.com", 0L, LocalDate.of(2021, 1, 1),
                 "director", 100000.00
         );
-        when(personRepository.findById(1L)).thenReturn(Optional.of(new Employee()));
-        Mockito.doReturn(new DictionaryValue("director")).when(dictionaryValueService).getByName("director");
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(new Employee()));
+        Mockito.doReturn(new DictionaryValue("director"))
+                .when(dictionaryValueService).getByNameFromDictionary("director", "positions");
         //when
         Employee employee = (Employee) updaterFactory.update(updateCommand);
         //then
